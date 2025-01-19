@@ -6,6 +6,10 @@
 </a>
 <p>SnapFest is a performance module designed specifically for Snapdragon devices, the successor of Bumbu Racik. This module focuses on boosting speed, responsiveness, and overall device performance, making daily use and gaming smoother.</p>
 
+## 📑 Notes
+- Combine this module with [**Adreno GPU Drivers**](https://t.me/lhmodshare) for better performance.
+- Use a **CLO/CAF-based** kernel to optimize performance (if available on your device).
+
 ## ❓ Requirements
 - Basic knowledge of Android modifications.
 - Android device with Root access **(Magisk/KernelSU/APatch)**.
