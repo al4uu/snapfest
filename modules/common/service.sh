@@ -114,6 +114,18 @@ echo "255" > /proc/sys/kernel/sched_lib_mask_force
 echo "$lib_names" > /proc/sys/walt/sched_lib_name
 echo "255" > /proc/sys/walt/sched_lib_mask_force
 
+if grep -q bbr2 /proc/sys/net/ipv4/tcp_available_congestion_control; then
+    echo "bbr2" > /proc/sys/net/ipv4/tcp_congestion_control
+else
+    echo "cubic" > /proc/sys/net/ipv4/tcp_congestion_control
+fi
+
+echo "1" > /proc/sys/net/ipv4/tcp_low_latency
+echo "1" > /proc/sys/net/ipv4/tcp_ecn
+echo "3" > /proc/sys/net/ipv4/tcp_fastopen
+echo "1" > /proc/sys/net/ipv4/tcp_sack
+echo "0" > /proc/sys/net/ipv4/tcp_timestamps
+
 su -c "stop mi_thermald thermal-engine vendor.thermal-engine traced tombstoned tcpdump cnss_diag statsd vendor.perfservice logcat logcatd logd idd-logreader idd-logreadermain stats dumpstate vendor.tcpdump vendor_tcpdump vendor.cnss_diag"
 
 am kill logd
