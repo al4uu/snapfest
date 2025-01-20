@@ -119,9 +119,6 @@ echo "0" > /sys/module/cpufreq_bouncing/parameters/enable
 echo "0" > /proc/task_info/task_sched_info/task_sched_info_enable
 echo "0" > /proc/oplus_scheduler/sched_assist/sched_assist_enabled
 
-echo "3" > /proc/sys/vm/drop_caches
-echo "1" > /proc/sys/vm/compact_memory
-
 lib_names="com.miHoYo., com.activision., com.garena., com.roblox., com.epicgames, com.dts., UnityMain, libunity.so, libil2cpp.so, libmain.so, libcri_vip_unity.so, libopus.so, libxlua.so, libUE4.so, libAsphalt9.so, libnative-lib.so, libRiotGamesApi.so, libResources.so, libagame.so, libapp.so, libflutter.so, libMSDKCore.so, libFIFAMobileNeon.so, libUnreal.so, libEOSSDK.so, libcocos2dcpp.so, libgodot_android.so, libgdx.so, libgdx-box2d.so, libminecraftpe.so, libLive2DCubismCore.so, libyuzu-android.so, libryujinx.so, libcitra-android.so, libhdr_pro_engine.so, libandroidx.graphics.path.so, libeffect.s"
 
 echo "$lib_names" > /proc/sys/kernel/sched_lib_name
@@ -142,6 +139,20 @@ if grep -q bbr2 /proc/sys/net/ipv4/tcp_available_congestion_control; then
 else
     echo "cubic" > /proc/sys/net/ipv4/tcp_congestion_control
 fi
+
+if [ -f "/sys/kernel/debug/sched_features" ]; then
+    echo "NEXT_BUDDY" > /sys/kernel/debug/sched_features
+    echo "NO_TTWU_QUEUE" > /sys/kernel/debug/sched_features
+fi
+
+if [ -d "/dev/stune/" ]; then
+    echo "1" > /dev/stune/top-app/schedtune.prefer_idle
+    echo "1" > /dev/stune/top-app/schedtune.boost
+fi
+
+echo "3" > /proc/sys/vm/drop_caches
+echo "1" > /proc/sys/vm/compact_memory
+echo "80" > /proc/sys/vm/vfs_cache_pressure
 
 echo "1" > /proc/sys/net/ipv4/tcp_low_latency
 echo "1" > /proc/sys/net/ipv4/tcp_ecn
