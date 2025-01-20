@@ -126,13 +126,39 @@ echo "3" > /proc/sys/net/ipv4/tcp_fastopen
 echo "1" > /proc/sys/net/ipv4/tcp_sack
 echo "0" > /proc/sys/net/ipv4/tcp_timestamps
 
-su -c "stop mi_thermald thermal-engine vendor.thermal-engine traced tombstoned tcpdump cnss_diag statsd vendor.perfservice logcat logcatd logd idd-logreader idd-logreadermain stats dumpstate vendor.tcpdump vendor_tcpdump vendor.cnss_diag"
+echo "0" > /sys/kernel/ccci/debug
+echo "0" > /sys/kernel/tracing/tracing_on
+echo "0" > /proc/sys/kernel/perf_event_paranoid
+echo "0" > /proc/sys/kernel/debug_locks
+echo "0" > /proc/sys/kernel/perf_cpu_time_max_percent
+echo "off" > /proc/sys/kernel/printk_devkmsg
 
-am kill logd
+su -c "stop mi_thermald"
+su -c "stop thermal-engine"
+su -c "stop vendor.thermal-engine"
+su -c "stop traced"
+su -c "stop tombstoned"
+su -c "stop tcpdump"
+su -c "stop cnss_diag"
+su -c "stop statsd"
+su -c "stop vendor.perfservice"
+su -c "stop logcat"
+su -c "stop logcatd"
+su -c "stop logd"
+su -c "stop idd-logreader"
+su -c "stop idd-logreadermain"
+su -c "stop stats"
+su -c "stop dumpstate"
+su -c "stop vendor.tcpdump"
+su -c "stop vendor_tcpdump"
+su -c "stop vendor.cnss_diag"
+
 killall -9 logd
-
-am kill logd.rc
+killall -9 logcat
+killall -9 logcatd
 killall -9 logd.rc
+killall -9 traced
+killall -9 tombstoned
 
 rm -rf /data/anr/*
 rm -rf /dev/log/*
