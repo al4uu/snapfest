@@ -518,8 +518,8 @@ echo "32" > /proc/sys/kernel/sched_nr_migrate
 
 echo "deadline" > /sys/block/mmcblk0/queue/scheduler
 echo "deadline" > /sys/block/mmcblk1/queue/scheduler
-echo "1024" > /sys/block/mmcblk0/queue/read_ahead_kb
-echo "1024" > /sys/block/mmcblk1/queue/read_ahead_kb
+echo "32" > /sys/block/mmcblk0/queue/read_ahead_kb
+echo "32" > /sys/block/mmcblk1/queue/read_ahead_kb
 echo "75" > /sys/devices/system/cpu/cpufreq/performance/up_threshold
 echo "40000" > /sys/devices/system/cpu/cpufreq/performance/sampling_rate
 echo "5" > /sys/devices/system/cpu/cpufreq/performance/sampling_down_factor
@@ -573,8 +573,6 @@ echo "0" > /sys/block/sdf/queue/add_random
 echo "1" > /sys/block/sdf/queue/rq_affinity
 echo "0" > /sys/block/sdf/queue/nomerges
 echo "1024" > /sys/block/sdf/queue/nr_requests
-echo "deadline" > /sys/block/mmcblk0/queue/scheduler
-echo "1024" > /sys/block/mmcblk0/queue/read_ahead_kb
 echo "0" > /sys/block/mmcblk0/queue/rotational
 echo "0" > /sys/block/mmcblk0/queue/iostats
 echo "0" > /sys/block/mmcblk0/queue/add_random
