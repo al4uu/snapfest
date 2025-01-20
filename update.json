@@ -1,6 +1,6 @@
 {
-  "version": "0.0",
-  "versionCode": 0,
-  "zipUrl": "https://github.com/al4uu/snapfest/releases/download/v0.0/snapfest-0.0-chash-release.zip",
+  "version": "1.0",
+  "versionCode": 100,
+  "zipUrl": "https://github.com/al4uu/snapfest/releases/download/v0.0/snapfest-1.0-100-d07d596-release.zip",
   "changelog": "https://raw.githubusercontent.com/al4uu/snapfest/main/changelog.md"
 }
