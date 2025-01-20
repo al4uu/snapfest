@@ -1,0 +1,7 @@
+id=snapfest
+name=SnapFest Tweaks
+version=0.0
+versionCode=0
+author=@al4uu
+description=Special performance module designed for Snapdragon devices !
+updateJson=https://raw.githubusercontent.com/al4uu/snapfest/fest/update.json
