@@ -129,6 +129,14 @@ echo "255" > /proc/sys/kernel/sched_lib_mask_force
 echo "$lib_names" > /proc/sys/walt/sched_lib_name
 echo "255" > /proc/sys/walt/sched_lib_mask_force
 
+if [ -f /sys/module/battery_saver/parameters/enabled ]; then
+    if grep -qo '[0-9]\+' /sys/module/battery_saver/parameters/enabled; then
+        echo "0" > /sys/module/battery_saver/parameters/enabled
+    else
+        echo "N" > /sys/module/battery_saver/parameters/enabled
+    fi
+fi
+
 if grep -q bbr2 /proc/sys/net/ipv4/tcp_available_congestion_control; then
     echo "bbr2" > /proc/sys/net/ipv4/tcp_congestion_control
 else
