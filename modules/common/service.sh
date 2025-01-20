@@ -40,16 +40,43 @@ if [ -e /sys/class/kgsl/kgsl-3d0/devfreq/governor ]; then
   echo "msm-adreno-tz" > /sys/class/kgsl/kgsl-3d0/devfreq/governor
 fi
 
-find /sys/devices/system/cpu -maxdepth 1 -name 'cpu?' | while IFS= read -r cpu; do
-  echo performance > "$cpu/cpufreq/scaling_governor"
-done
-
 for ufsemmc in /sys/class/devfreq/*.ufshc; do
     [ -w "$ufsemmc/governor" ] && echo "performance" > "$ufsemmc/governor"
 done
 for ufsemmc in /sys/class/devfreq/mmc*; do
     [ -w "$ufsemmc/governor" ] && echo "performance" > "$ufsemmc/governor"
 done
+
+for path in /sys/devices/system/cpu/cpufreq/policy*; do
+    echo performance > "$path/scaling_governor" 2>/dev/null
+done
+
+echo 1 > /sys/devices/system/cpu/cpu1/online 2>/dev/null
+
+if [ -d /proc/ppm ]; then
+    cluster=0
+    for path in /sys/devices/system/cpu/cpufreq/policy*; do
+        cpu_maxfreq=$(cat "$path/cpuinfo_max_freq" 2>/dev/null)
+        if [ -n "$cpu_maxfreq" ]; then
+            echo "$cluster $cpu_maxfreq" > /proc/ppm/policy/hard_userlimit_max_cpu_freq 2>/dev/null
+            echo "$cluster $cpu_maxfreq" > /proc/ppm/policy/hard_userlimit_min_cpu_freq 2>/dev/null
+        fi
+        ((cluster++))
+    done
+fi
+
+if [ -f /sys/devices/virtual/thermal/thermal_message/cpu_limits ]; then
+    chmod 644 /sys/devices/virtual/thermal/thermal_message/cpu_limits 2>/dev/null
+    for path in /sys/devices/system/cpu/*/cpufreq; do
+        cpu_maxfreq=$(cat "$path/cpuinfo_max_freq" 2>/dev/null)
+        if [ -n "$cpu_maxfreq" ]; then
+            echo "cpu$(awk '{print $1}' "$path/affected_cpus") $cpu_maxfreq" > /sys/devices/virtual/thermal/thermal_message/cpu_limits 2>/dev/null
+            echo "$cpu_maxfreq" > "$path/scaling_max_freq" 2>/dev/null
+            echo "$cpu_maxfreq" > "$path/scaling_min_freq" 2>/dev/null
+        fi
+    done
+    chmod 000 /sys/devices/virtual/thermal/thermal_message/cpu_limits 2>/dev/null
+fi
 
 echo "0" > /sys/class/kgsl/kgsl-3d0/throttling
 echo "0" > /sys/class/kgsl/kgsl-3d0/bus_split
