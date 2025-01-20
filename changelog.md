@@ -4,7 +4,7 @@
 
 ## 1.0 (2025-01-20)
 - Initial release GitHub.
-- Optimize props for system stability.
+- Optimize `props` for system stability.
 - Optimize `scheduling` and `memory` parameters.
 - Refactor battery saver module disabling logic.
 - Disable `debugging` and stop system `services`.
