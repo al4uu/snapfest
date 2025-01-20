@@ -104,6 +104,21 @@ echo "off" > "/proc/sys/kernel/printk_devkmsg"
 echo "0:1800000" > /sys/devices/system/cpu/cpu_boost/parameters/input_boost_freq
 echo "230" > /sys/devices/system/cpu/cpu_boost/parameters/input_boost_ms
 
+echo "0" > /proc/sys/kernel/sched_schedstats
+echo "0" > /proc/sys/kernel/sched_autogroup_enabled
+echo "1" > /proc/sys/kernel/sched_child_runs_first
+echo "32" > /proc/sys/kernel/sched_nr_migrate
+echo "50000" > /proc/sys/kernel/sched_migration_cost_ns
+echo "1000000" > /proc/sys/kernel/sched_min_granularity_ns
+echo "1500000" > /proc/sys/kernel/sched_wakeup_granularity_ns
+echo "0" > /proc/sys/vm/page-cluster
+echo "120" > /proc/sys/vm/stat_interval
+echo "0" > /proc/sys/vm/compaction_proactiveness
+echo "0" > /sys/module/mmc_core/parameters/use_spi_crc
+echo "0" > /sys/module/cpufreq_bouncing/parameters/enable
+echo "0" > /proc/task_info/task_sched_info/task_sched_info_enable
+echo "0" > /proc/oplus_scheduler/sched_assist/sched_assist_enabled
+
 echo "3" > /proc/sys/vm/drop_caches
 echo "1" > /proc/sys/vm/compact_memory
 
