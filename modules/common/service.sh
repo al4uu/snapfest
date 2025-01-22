@@ -251,11 +251,21 @@ for pl in /sys/devices/system/cpu/perf; do
     [ -w "$pl/charger_enable" ] && echo "1" > "$pl/charger_enable"
 done
 
-[ -w /proc/ppm/enabled ] && echo "1" > /proc/ppm/enabled
-for i in $(seq 0 9); do
-    [ -w /proc/ppm/policy_status ] && echo "$i 0" > /proc/ppm/policy_status
-done
-[ -w /proc/ppm/policy_status ] && echo "7 1" > /proc/ppm/policy_status
+if [ -w /proc/ppm/enabled ]; then
+    echo "1" > /proc/ppm/enabled
+fi
+
+if [ -d /proc/ppm ]; then
+    for idx in $(awk -F'[][]' '/PWR_THRO|THERMAL/ {print $2}' /proc/ppm/policy_status); do
+        echo "$idx 0" > /proc/ppm/policy_status 2>/dev/null
+    done
+
+    for i in $(seq 0 9); do
+        echo "$i 0" > /proc/ppm/policy_status 2>/dev/null
+    done
+
+    echo "7 1" > /proc/ppm/policy_status 2>/dev/null
+fi
 
 for thermal in $(resetprop | awk -F '[][]' '/thermal|init.svc.vendor.thermal-hal/ {print $2}'); do
   if [[ $(resetprop "$thermal") == "running" || $(resetprop "$thermal") == "restarting" ]]; then
