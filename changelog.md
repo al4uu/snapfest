@@ -2,6 +2,11 @@
 - Other changes before `SnapFest`, check the `Bumbu Racik` Changelog on GitHub :
   - `github.com/al4uu/bumbu_racik/blob/main/changelog.md`
 
+## 1.1 (2025-01-22)
+- Refactor `installer` logic.
+- Stop all `thermal-related` services.
+- Rewrite `PPM` script for improved `thermal` control and `policy` optimization.
+
 ## 1.0 (2025-01-20)
 - Initial release GitHub.
 - Optimize `props` for system stability.
