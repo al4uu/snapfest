@@ -251,6 +251,19 @@ for pl in /sys/devices/system/cpu/perf; do
     [ -w "$pl/charger_enable" ] && echo "1" > "$pl/charger_enable"
 done
 
+list_thermal_services() {
+    find /system/etc/init /vendor/etc/init /odm/etc/init -type f 2>/dev/null | while IFS= read -r rc; do
+        grep -E "^service" "$rc" 2>/dev/null | awk '{print $2}' | grep -E "thermal" || true
+    done
+}
+
+for svc in $(list_thermal_services); do
+    if [ -n "$svc" ]; then
+        start "$svc" >/dev/null 2>&1
+        stop "$svc" >/dev/null 2>&1
+    fi
+done
+
 if [ -w /proc/ppm/enabled ]; then
     echo "1" > /proc/ppm/enabled
 fi
@@ -709,6 +722,7 @@ settings put system nearby_scanning_permission_allowed 0
 pm disable com.qualcomm.qti.cne
 pm disable com.qualcomm.location.XT
 
+cmd thermalservice override-status 0
 cmd power set-adaptive-power-saver-enabled false
 cmd power set-fixed-performance-mode-enabled true
 
