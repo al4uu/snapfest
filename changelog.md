@@ -3,7 +3,7 @@
 - Other changes before `SnapFest`, check the `Bumbu Racik` Changelog on GitHub :
   - `github.com/al4uu/bumbu_racik/blob/main/changelog.md`
 
-## 1.2 (2025-01-22)
+## 1.2 (2025-01-30)
 - Refactored code `logic` and `structure`.
 - Revamped `SurfaceFlinger` and reworked `core` logic.
 - Fixing random `reboots`, `vibration`, and `flickering`.
