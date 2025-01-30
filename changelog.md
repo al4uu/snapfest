@@ -1,6 +1,12 @@
 # CL - SnapFest
+- Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
 - Other changes before `SnapFest`, check the `Bumbu Racik` Changelog on GitHub :
   - `github.com/al4uu/bumbu_racik/blob/main/changelog.md`
+
+## 1.2 (2025-01-22)
+- Refactored code `logic` and `structure`.
+- Revamped `SurfaceFlinger` and reworked `core` logic.
+- Fixing random `reboots`, `vibration`, and `flickering`.
 
 ## 1.1 (2025-01-22)
 - Refactor `installer` logic.
