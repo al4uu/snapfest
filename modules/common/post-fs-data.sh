@@ -47,32 +47,26 @@ echo "$config" > "$MODPATH"/system/lib64/egl/egl.cfg
 echo "$config" > "$MODPATH"/system/vendor/lib/egl/egl.cfg
 echo "$config" > "$MODPATH"/system/vendor/lib64/egl/egl.cfg
 
+echo "0" > /sys/block/sda/queue/iostats
+echo "0" > /sys/block/loop1/queue/iostats
+echo "0" > /sys/block/loop2/queue/iostats
+echo "0" > /sys/block/loop3/queue/iostats
+echo "0" > /sys/block/loop4/queue/iostats
+echo "0" > /sys/block/loop5/queue/iostats
+echo "0" > /sys/block/loop6/queue/iostats
+echo "0" > /sys/block/loop7/queue/iostats
+echo "0" > /sys/block/dm-0/queue/iostats
+echo "0" > /sys/block/loop0/queue/iostats
+echo "0" > /sys/block/mmcblk1/queue/iostats
+echo "0" > /sys/block/mmcblk0/queue/iostats
+echo "0" > /sys/block/mmcblk0rpmb/queue/iostats
+
 echo "N" > /sys/module/kernel/parameters/initcall_debug
 echo "0" > /sys/module/printk/parameters/console_suspend
 echo "bbr" > /sys/module/tcp_bbr/parameters/tcp_congestion_control
 
-echo 0 > /sys/block/sda/queue/iostats
-echo 0 > /sys/block/loop1/queue/iostats
-echo 0 > /sys/block/loop2/queue/iostats
-echo 0 > /sys/block/loop3/queue/iostats
-echo 0 > /sys/block/loop4/queue/iostats
-echo 0 > /sys/block/loop5/queue/iostats
-echo 0 > /sys/block/loop6/queue/iostats
-echo 0 > /sys/block/loop7/queue/iostats
-echo 0 > /sys/block/dm-0/queue/iostats
-echo 0 > /sys/block/loop0/queue/iostats
-echo 0 > /sys/block/mmcblk1/queue/iostats
-echo 0 > /sys/block/mmcblk0/queue/iostats
-echo 0 > /sys/block/mmcblk0rpmb/queue/iostats
-
-for cpu in /sys/devices/system/cpu/cpu*/cpufreq
-do
-    echo "1" > $cpu/boost
-done
-
 set_properties="
 sys.use_fifo_ui=1
-debug.overlayui=1
 logcat.live=disable
 persist.sys.ui.hw=1
 ro.kernel.checkjni=0
@@ -100,15 +94,9 @@ persist.android.strictmode=0
 pm.dexopt.install=everything
 ro.ui.pipeline=skiaglthreaded
 persist.sys.egl.swapinterval=1
-debug.rs.qcom.noobjcache=1
-debug.rs.qcom.force_finish=1
-debug.rs.qcom.disable_flex=1
-debug.gr.numframebuffers=2
 ro.vendor.perf.scroll_opt=true
 dalvik.vm.minidebuginfo=false
 persist.sys.use_16bpp_alpha=1
-debug.rs.qcom.adrenoboost=1
-debug.rs.qcom.dump_setup=0
 ro.zygote.disable_gl_preload=1
 persist.sys.purgeable_assets=1
 dalvik.vm.deadlock-predict=off
@@ -117,10 +105,7 @@ profiler.force_disable_err_rpt=1
 dalvik.vm.check-dex-sum=false
 persist.service.lgospd.enable=0
 dalvik.vm.verify-bytecode=false
-debug.rs.qcom.nointrinsicblur=1
-debug.rs.qcom.nointrinsicblas=1
 persist.service.pcsync.enable=0
-debug.rs.qcom.use_fast_math=1
 dalvik.vm.execution-mode=int:jit
 ro.hwui.use_skiaglthreaded=true
 pm.dexopt.first-boot=everything
@@ -151,60 +136,37 @@ renderthread.skiaglthreaded.reduceopstasksplitting=true
 "
 
 reset_properties="
-log_ao=0
 rw.logger=0
 log.tag.all=0
-debug_test=0
 log.shaders=0
 config.stats=0
 logd.statistics=0
 ro.logd.size=OFF
 ro.debuggable=0
-log_frame_info=0
 sys.init_log_level=0
 ro.logd.kernel=false
 persist.logd.limit=OFF
 log.tag.stats_log=OFF
 ro.logd.size.stats=64K
-debug.mdpcomp.logs=0
+ro.iorapd.enable=false
 persist.logd.size.radio=1M
-debug.rs.qcom.verbose=0
 persist.logd.size.crash=1M
-debug.enable.wl_log=false
-debug.rs.qcom.noprofile=1
 persist.logd.size.radio=OFF
 ro.logdumpd.enabled=false
-debug.qualcomm.sns.hal=0
 media.stagefright.log-uri=0
 persist.logd.size.crash=OFF
-debug.rs.qcom.noextraeq=1
 persist.logd.size.system=1M
-debug.rs.qcom.noperfhint=1
 persist.sys.perf.debug=false
 persist.logd.size.system=OFF
 logd.logpersistd.enable=false
-debug.rs.qcom.noobjcache=1
-debug.rs.qcom.force_finish=1
-debug.rs.qcom.disable_flex=1
-debug.rs.qcom.adrenoboost=1
-debug.rs.qcom.dump_setup=0
 tombstoned.max_anr_count=0
 db.log.slow_query_threshold=0
-debug.rs.qcom.nointrinsicblur=1
-debug.rs.qcom.nointrinsicblas=1
-debug.rs.qcom.use_fast_math=1
 persist.data.qmi.adb_logmask=0
 persist.ims.disableIMSLogs=true
-debug.rs.qcom.dump_bitcode=0
-debug.sqlite.wal.syncmode=OFF
-debug.qualcomm.sns.daemon=0
 persist.service.logd.enable=false
-debug.atrace.tags.enableflags=0
 persist.ims.disableADBLogs=true
-debug.rs.qcom.disable_expand=1
 db.log.slow_query_threshold=999
 vendor.debug.rs.qcom.verbose=0
-debug.qualcomm.sns.libsensor1=0
 persist.vendor.radio.adb_log_on=0
 persist.ims.disableQXDMLogs=true
 persist.ims.disableDebugLogs=true
@@ -212,24 +174,32 @@ ro.vendor.connsys.dedicated.log=0
 vendor.bluetooth.startbtlogger=false
 vendor.debug.rs.qcom.dump_setup=0
 vendor.debug.rs.qcom.dump_bitcode=0
-debug.rs.qcom.disable_performancehint=1
+ro.surface_flinger.protected_contents=true
 persist.bluetooth.btsnooplogmode=disabled
 persist.vendor.radio.snapshot_enabled=false
 persist.vendor.verbose_logging_enabled=false
+ro.surface_flinger.has_wide_color_display=true
+ro.surface_flinger.use_color_management=true
 persist.vendor.sys.modem.logging.enable=false
 persist.sys.turbosched.enable.coreApp.optimizer=true
-persist.device_config.surface_flinger_native_boot.SkiaTracingFeature__use_skia_tracing=true
+ro.surface_flinger.max_virtual_display_dimension=4096
+ro.surface_flinger.running_without_sync_framework=true
+ro.surface_flinger.force_hwc_copy_for_virtual_displays=true
+persist.device_config.runtime_native_boot.iorap_perfetto_enable=false
+persist.device_config.runtime_native_boot.iorap_readahead_enable=false
+persist.device_config.surface_flinger_native_boot.SkiaTracingFeature_use_skia_tracing=true
 "
 
-echo "$set_properties" | while IFS= read -r prop; do
-  prop_name="${prop%%=*}"
-  prop_value="${prop#*=}"
-  if [ -n "$setprop" ]; then
+for prop in $set_properties; do
+    prop_name="${prop%%=*}"
+    prop_value="${prop#*=}"
     setprop "$prop_name" "$prop_value"
-  fi
-  if [ -n "$resetprop" ]; then
+done
+
+for prop in $reset_properties; do
+    prop_name="${prop%%=*}"
+    prop_value="${prop#*=}"
     resetprop -n "$prop_name" "$prop_value"
-  fi
 done
 
 rm "$MODPATH"/post-fs-data.sh
