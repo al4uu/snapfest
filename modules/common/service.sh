@@ -267,36 +267,8 @@ find /sys/ -name enabled | grep 'msm_thermal' | while IFS= read -r msm_thermal_s
     fi
 done
 
-for i in "debug_mask" "log_level*" "debug_level*" "*debug_mode" "enable_ramdumps" "edac_mc_log*" \
-         "enable_event_log" "*log_level*" "*log_ue*" "*log_ce*" "log_ecn_error" \
-         "snapshot_crashdumper" "seclog*" "compat-log" "*log_enabled" "tracing_on" "mballoc_debug"; do
-    find /sys/ -type f -name "$i" 2>/dev/null | while IFS= read -r log_file; do
-        if [ -w "$log_file" ]; then
-            echo "0" > "$log_file" 2>/dev/null
-        fi
-    done
-done
-
-for svc in mi_thermald traced tombstoned tcpdump cnss_diag statsd logcat logcatd logd \
-           idd-logreader idd-logreadermain stats dumpstate vendor.tcpdump vendor_tcpdump \
-           vendor.cnss_diag; do
-    if pgrep -x "$svc" >/dev/null; then
-        su -c "stop $svc" >/dev/null 2>&1
-    fi
-done
-
-for proc in logd logcat logcatd logd.rc traced tombstoned; do
-    if pgrep -x "$proc" >/dev/null; then
-        killall -9 "$proc" >/dev/null 2>&1
-    fi
-done
-
-for path in /data/anr /dev/log /data/tombstones /data/log_other_mode \
-            /data/system/dropbox /data/system/usagestats /data/log /sys/kernel/debug \
-            /storage/emulated/0/*.log /storage/emulated/0/Android/*.log; do
-    if [ -d "$path" ]; then
-        rm -rf "$path" >/dev/null 2>&1
-    fi
+for service in logd traced statsd mi_thermald; do
+    su -c "stop $service"
 done
 
 lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.epicgames com.dts. UnityMain libunity.so libil2cpp.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
@@ -418,88 +390,44 @@ sleep 15
 setprop debug.sf.hw 1
 setprop debug.egl.hw 1
 setprop debug.overlayui 1
-setprop debug.hwui.level 2
 setprop debug.sf.showfps 0
 setprop debug.sf.showcpu 0
-setprop debug.mdpcomp.logs 0
 setprop debug.qc.hardware true
 setprop debug.hwui.fps_divisor 1
-setprop debug.qctwa.statusbar 1
 setprop debug.sf.showupdates 0
-setprop debug.egl.disable_msaa 1
-setprop debug.rs.qcom.verbose 0
-setprop debug.enable.wl_log false
-setprop debug.rs.qcom.noprofile 1
-setprop debug.qualcomm.sns.hal 0
 setprop debug.hwui.renderer skiagl
 setprop debug.cpurend.vsync false
-setprop debug.hwui.overdraw false
-setprop debug.qctwa.preservebuf 1
-setprop debug.rs.qcom.noextraeq 1
-setprop debug.rs.qcom.noperfhint 1
-setprop debug.sf.enable_hwc_vds 0
-setprop debug.sf.latch_unsignaled 1
 setprop debug.performance.tuning 1
 setprop debug.sf.showbackground 0
-setprop debug.egl.disable_msaa true
 setprop debug.composition.type gpu
-setprop debug.rs.qcom.force_finish 1
 setprop debug.rs.qcom.noobjcache 1
-setprop debug.gr.numframebuffers 2
+setprop debug.rs.qcom.force_finish 1
 setprop debug.rs.qcom.disable_flex 1
-setprop debug.hwui.nv_profiling false
 setprop debug.rs.qcom.adrenoboost 1
-setprop debug.rs.qcom.dump_setup 0
-setprop debug.hwui.skp_filename false
 setprop debug.hwui.disable_vsync true
 setprop debug.hwui.render_thread true
 setprop debug.rs.qcom.nointrinsicblur 1
 setprop debug.rs.qcom.nointrinsicblas 1
 setprop debug.rs.qcom.use_fast_math 1
 setprop debug.skia.threaded_mode true
-setprop debug.sqlite.wal.syncmode OFF
-setprop debug.rs.qcom.dump_bitcode 0
-setprop debug.qualcomm.sns.daemon 0
-setprop debug.atrace.tags.enableflags 0
-setprop debug.sf.disable_backpressure 1
-setprop debug.rs.qcom.disable_expand 1
 setprop debug.hwui.use_buffer_age false
 setprop debug.skia.num_render_threads 1
-setprop debug.qualcomm.sns.libsensor1 0
-setprop debug.gralloc.gfx_ubwc_disable 1
 setprop debug.hwui.render_thread_count 1
-setprop debug.sf.enable_gl_backpressure 1
-setprop debug.hwui.clip_surfaceviews false
-setprop debug.hwui.use_hint_manager false
 setprop debug.hwui.disable_draw_defer true
 setprop debug.hwui.show_dirty_regions false
-setprop debug.hwui.8bit_hdr_headroom false
-setprop debug.hwui.skip_empty_damage true
-setprop debug.hwui.app_memory_policy false
-setprop debug.hwui.filter_test_overhead false
-setprop debug.hwui.use_partial_updates false
-setprop debug.hwui.skia_atrace_enabled false
 setprop debug.hwui.render_dirty_regions false
 setprop debug.hwui.skia_tracing_enabled false
 setprop debug.hwui.disable_draw_reorder true
-setprop debug.skia.render_thread_priority true
 setprop debug.hwui.trace_gpu_resources false
+setprop debug.skia.render_thread_priority true
 setprop debug.hwui.target_cpu_time_percent 1
-setprop debug.hwui.capture_skp_enabled false
-setprop debug.hwui.show_layers_updates false
 setprop debug.hwui.use_gpu_pixel_buffers true
 setprop debug.sf.early_phase_offset_ns 500000
-setprop debug.rs.qcom.disable_performancehint 1
-setprop debug.sf.enable_transaction_tracing false
-setprop debug.hwui.webview_overlays_enabled true
 setprop debug.renderengine.backend skiaglthreaded
 setprop debug.sf.early_gl_phase_offset_ns 3000000
-setprop debug.sf.disable_client_composition_cache 0
 setprop debug.sf.early_app_phase_offset_ns 500000
-setprop debug.hwui.skia_use_perfetto_track_events false
 setprop debug.sf.early_gl_app_phase_offset_ns 15000000
 setprop debug.sf.high_fps_early_phase_offset_ns 6100000
-setprop debug.renderthread.skia.reduceopstasksplitting true
 setprop debug.sf.high_fps_early_gl_phase_offset_ns 650000
 setprop debug.sf.high_fps_late_app_phase_offset_ns 100000
 setprop debug.sf.phase_offset_threshold_for_next_vsync_ns 6100000
