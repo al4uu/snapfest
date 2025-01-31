@@ -12,7 +12,7 @@ fi
 service_pid=$(shuf -i 1000-9999 -n 1)
 
 echo "* SnapFest $version"
-echo "* Service PID : $service_pid"
+echo "* Service PID : ($service_pid)"
 echo ""
 sleep 3
 echo "- Restarting SnapFest Service.."
@@ -20,7 +20,7 @@ echo "- Restarting SnapFest Service.."
 if [ -f "$SERVICE_SCRIPT" ]; then
   sh "$SERVICE_SCRIPT" &
   echo "- SnapFest Service has been restarted !"
-  echo "- Service script executed with PID : $!"
+  echo "- Service script executed with PID : ($!)"
 else
   echo "- service.sh not found."
 fi
