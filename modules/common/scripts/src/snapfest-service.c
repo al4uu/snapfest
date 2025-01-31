@@ -144,34 +144,9 @@ void disable_msm_thermal() {
     fclose(fp);
 }
 
-void disable_log_files() {
-    const char *log_patterns[] = {
-        "debug_mask", "log_level*", "debug_level*", "*debug_mode", "enable_ramdumps", 
-        "edac_mc_log*", "enable_event_log", "*log_level*", "*log_ue*", "*log_ce*", 
-        "log_ecn_error", "snapshot_crashdumper", "seclog*", "compat-log", "*log_enabled", 
-        "tracing_on", "mballoc_debug"
-    };
-
-    for (int i = 0; i < sizeof(log_patterns) / sizeof(log_patterns[0]); i++) {
-        FILE *fp = popen("find /sys/ -type f -name \"*\" 2>/dev/null", "r");
-        if (fp == NULL) continue;
-
-        char log_file[PATH_MAX];
-        while (fgets(log_file, sizeof(log_file), fp)) {
-            log_file[strcspn(log_file, "\n")] = 0;
-            if (file_exists(log_file) && strstr(log_file, log_patterns[i])) {
-                write_to_file(log_file, "0");
-            }
-        }
-        fclose(fp);
-    }
-}
-
 void stop_services() {
     const char *services[] = {
-        "mi_thermald", "traced", "tombstoned", "tcpdump", "cnss_diag", "statsd", "logcat",
-        "logcatd", "logd", "idd-logreader", "idd-logreadermain", "stats", "dumpstate",
-        "vendor.tcpdump", "vendor_tcpdump", "vendor.cnss_diag"
+        "mi_thermald", "logd", "traced", "statsd"
     };
 
     for (int i = 0; i < sizeof(services) / sizeof(services[0]); i++) {
@@ -183,35 +158,8 @@ void stop_services() {
     }
 }
 
-void kill_processes() {
-    const char *processes[] = {
-        "logd", "logcat", "logcatd", "logd.rc", "traced", "tombstoned"
-    };
-
-    for (int i = 0; i < sizeof(processes) / sizeof(processes[0]); i++) {
-        if (system("pgrep -x ") == 0) {
-            char kill_command[256];
-            snprintf(kill_command, sizeof(kill_command), "killall -9 %s >/dev/null 2>&1", processes[i]);
-            system(kill_command);
-        }
-    }
-}
-
-void remove_log_directories() {
-    const char *paths[] = {
-        "/data/anr", "/dev/log", "/data/tombstones", "/data/log_other_mode", "/data/system/dropbox",
-        "/data/system/usagestats", "/data/log", "/sys/kernel/debug", "/storage/emulated/0/*.log",
-        "/storage/emulated/0/Android/*.log"
-    };
-
-    for (int i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
-        if (access(paths[i], F_OK) == 0) {
-            char rm_command[256];
-            snprintf(rm_command, sizeof(rm_command), "rm -rf %s >/dev/null 2>&1", paths[i]);
-            system(rm_command);
-        }
-    }
-}
+// tar tak lanjut nambahin script lain, ribet ngoding c script dengan skill besik
+// ente bisa nambahin script lain dengan base c script dengan pr/fork repo
 
 int main() {
     list_thermal_services();
@@ -220,10 +168,7 @@ int main() {
     reset_thermal_properties();
     disable_thermal_throttling();
     disable_msm_thermal();
-    disable_log_files();
     stop_services();
-    kill_processes();
-    remove_log_directories();
 
     return 0;
 }
