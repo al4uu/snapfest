@@ -6,7 +6,7 @@ LATESTARTSERVICE=true
 
 ui_print " "
 ui_print "* SnapFest Tweaks"
-ui_print "* Version 1.2 (GIT@a284a56)"
+ui_print "* Version 1.3 (GIT@71b46e5)"
 ui_print "* @al4uu & @allprjkt"
 ui_print " "
 sleep 1
@@ -39,7 +39,7 @@ cp -af "$TMPDIR"/action.sh "$MODPATH"/action.sh >/dev/null 2>&1
 set_perm "$MODPATH/action.sh" 0 0 0755 0755
 set_perm "/data/local/tmp/snapfest.png" 0 0 0644 0644
 
-sleep 1
+sleep 2
 
 random=$((RANDOM % 9))
 
