@@ -1,7 +1,11 @@
 # CL - SnapFest
+- This module hasn’t been `Bumbu Racik` `based` since version `1.2`.
 - Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
-- Other changes before `SnapFest`, check the `Bumbu Racik` Changelog on GitHub :
-  - `github.com/al4uu/bumbu_racik/blob/main/changelog.md`
+
+## 1.3 (2025-01-31)
+- Redo `set_properties` and `reset_properties`.
+- Fine-tuned Kill `Logger` and `properties` tweaks.
+- Updated and Fixed `C` source `code`, removed `compiled` files from the repo.
 
 ## 1.2 (2025-01-30)
 - Refactored code `logic` and `structure`.
