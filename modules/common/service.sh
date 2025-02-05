@@ -389,41 +389,16 @@ sleep 15
 
 setprop debug.sf.hw 1
 setprop debug.egl.hw 1
-setprop debug.overlayui 1
+setprop debug.hwui.level 2
 setprop debug.sf.showfps 0
 setprop debug.sf.showcpu 0
-setprop debug.qc.hardware true
-setprop debug.hwui.fps_divisor 1
 setprop debug.sf.showupdates 0
 setprop debug.hwui.renderer skiagl
-setprop debug.cpurend.vsync false
 setprop debug.performance.tuning 1
 setprop debug.sf.showbackground 0
-setprop debug.composition.type gpu
-setprop debug.rs.qcom.noobjcache 1
-setprop debug.rs.qcom.force_finish 1
-setprop debug.rs.qcom.disable_flex 1
-setprop debug.rs.qcom.adrenoboost 1
-setprop debug.hwui.disable_vsync true
-setprop debug.hwui.render_thread true
-setprop debug.rs.qcom.nointrinsicblur 1
-setprop debug.rs.qcom.nointrinsicblas 1
-setprop debug.rs.qcom.use_fast_math 1
-setprop debug.skia.threaded_mode true
-setprop debug.hwui.use_buffer_age false
-setprop debug.skia.num_render_threads 1
-setprop debug.hwui.render_thread_count 1
-setprop debug.hwui.disable_draw_defer true
-setprop debug.hwui.show_dirty_regions false
+setprop debug.hwui.skip_empty_damage true
 setprop debug.hwui.render_dirty_regions false
-setprop debug.hwui.skia_tracing_enabled false
-setprop debug.hwui.disable_draw_reorder true
-setprop debug.hwui.trace_gpu_resources false
-setprop debug.skia.render_thread_priority true
-setprop debug.hwui.target_cpu_time_percent 1
-setprop debug.hwui.use_gpu_pixel_buffers true
 setprop debug.sf.early_phase_offset_ns 500000
-setprop debug.renderengine.backend skiaglthreaded
 setprop debug.sf.early_gl_phase_offset_ns 3000000
 setprop debug.sf.early_app_phase_offset_ns 500000
 setprop debug.sf.early_gl_app_phase_offset_ns 15000000
@@ -441,11 +416,8 @@ settings put global network_recommendations_enabled 0
 settings put secure adaptive_sleep 0
 settings put secure screensaver_enabled 0
 settings put secure send_action_app_error 0
-settings put secure screensaver_activate_on_dock 0
-settings put secure screensaver_activate_on_sleep 0
 settings put system motion_engine 0
 settings put system master_motion 0
-settings put system rakuten_denwa 0
 settings put system air_motion_engine 0
 settings put system air_motion_wake_up 0
 settings put system send_security_reports 0
