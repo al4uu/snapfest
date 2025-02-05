@@ -85,8 +85,16 @@ persist.sys.perf.topAppRenderThreadBoost.enable=true
 "
 
 reset_properties="
+sys.use_fifo_ui=1
+ro.min_pointer_dur=8
 ro.iorapd.enable=false
+ro.min.fling_velocity=8000
+persist.sys.lgospd.enable=0
+persist.sys.pcsync.enable=0
+persist.sys.scrollingcache=2
 persist.sys.perf.debug=false
+ro.max.fling_velocity=20000
+windowsmgr.max_event_per_sec=200
 ro.surface_flinger.protected_contents=true
 persist.vendor.verbose_logging_enabled=false
 ro.surface_flinger.has_wide_color_display=true
