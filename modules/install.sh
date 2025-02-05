@@ -6,7 +6,7 @@ LATESTARTSERVICE=true
 
 ui_print " "
 ui_print "* SnapFest Tweaks"
-ui_print "* Version 1.3 (GIT@71b46e5)"
+ui_print "* Version 1.4 (GIT@86e3bbc)"
 ui_print "* @al4uu & @allprjkt"
 ui_print " "
 sleep 1
