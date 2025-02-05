@@ -2,6 +2,12 @@
 - This module hasn’t been `Bumbu Racik` `based` since version `1.2`.
 - Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
 
+## 1.4 (2025-02-06)
+- Improved `UI` Speed.
+- Removed unused `system` settings.
+- Reworked performance `properties`.
+- Fix screen `Flicker` on some `Devices`.
+
 ## 1.3 (2025-01-31)
 - Redo `set_properties` and `reset_properties`.
 - Fine-tuned Kill `Logger` and `properties` tweaks.
