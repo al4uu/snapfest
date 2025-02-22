@@ -2,6 +2,13 @@
 - This module hasn’t been `Bumbu Racik` `based` since version `1.2`.
 - Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
 
+## 1.5 (2025-02-22)
+- Enable all `CPU` cores.
+- Add more package names and fix `sched_lib` write issues.
+- Refactor thermal: Disable `zone`, apply `step_wise` policy.
+- Implement `Snapdragon` detection refactor `permission` handling.
+- Optimize GPU Governor to `msm-adreno-tz` and set max available `frequency`.
+
 ## 1.4 (2025-02-06)
 - Improved `UI` Speed.
 - Removed unused `system` settings.
