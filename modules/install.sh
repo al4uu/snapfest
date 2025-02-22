@@ -4,42 +4,81 @@ PROPFILE=false
 POSTFSDATA=true
 LATESTARTSERVICE=true
 
+DEVICE=$(getprop ro.product.manufacturer)
+MODEL=$(getprop ro.product.device)
+SELINUX=$(getenforce)
+KERNEL=$(uname -r)
+
 ui_print " "
 ui_print "* SnapFest Tweaks"
-ui_print "* Version 1.4 (GIT@86e3bbc)"
+ui_print "* Version 1.5 (GIT@99e6449)"
 ui_print "* @al4uu & @allprjkt"
 ui_print " "
-sleep 1
 
-ui_print "- Device : $(getprop ro.product.manufacturer) ($(getprop ro.product.device))"
-sleep 1
-ui_print "- SELinux Status : $(getenforce)"
-sleep 1
-ui_print "- Kernel Version : $(uname -r)"
+ui_print "- Device : $DEVICE ($MODEL)"
+ui_print "- SELinux Status : $SELINUX"
+ui_print "- Kernel Version : $KERNEL"
 ui_print " "
 
-sleep 1
+detect_snapdragon() {
+  if [ -d /sys/class/kgsl/kgsl-3d0/devfreq ] || [ -d /sys/devices/platform/kgsl-2d0.0/kgsl ]; then
+    ui_print "- Detected Snapdragon SoC"
+    return 0
+  fi
 
-if [ -d /data/adb/modules/bumbu_racik ]; then
-    ui_print "- Bumbu Racik module detected. Removing"
-    rm -rf /data/adb/modules/bumbu_racik
+  soc_info="$(grep -E "Hardware|Processor" /proc/cpuinfo | uniq | cut -d ':' -f 2 | sed 's/^[ \t]*//')"
+  if echo "$soc_info" | grep -iqE "sm|qcom|qualcomm"; then
+    ui_print "- Detected Snapdragon SoC"
+    return 0
+  fi
+
+  prop_info="$(getprop ro.board.platform) $(getprop ro.hardware) $(getprop ro.hardware.chipname)"
+  if echo "$prop_info" | grep -iqE "sm|qcom|qualcomm"; then
+    ui_print "- Detected Snapdragon SoC"
+    return 0
+  fi
+
+  return 1
+}
+
+if detect_snapdragon; then
+  SOC=2
+  ui_print "- Applying tweaks for Snapdragon"
+else
+  ui_print "! Unsupported SoC detected, only Snapdragon is supported"
+  abort "! Installation aborted."
 fi
 
-sleep 2
+remove_bumbu_racik() {
+  path="$1"
+  if [ -d "$path" ]; then
+    ui_print "- Bumbu Racik module detected. Removing"
+    rm -rf "$path" && ui_print "- Successfully removed Bumbu Racik" || {
+      ui_print "! Failed to remove Bumbu Racik"
+      abort "! Installation aborted."
+    }
+  fi
+}
+
+remove_bumbu_racik "/data/adb/modules_update/bumbu_racik"
+remove_bumbu_racik "/data/adb/modules/bumbu_racik"
 
 ui_print "- Extracting module files"
-unzip "$ZIPFILE" "system/*" -x "*.sha256" -d "$MODPATH/" >/dev/null 2>&1
-unzip "$ZIPFILE" "action.sh" "snapfest.png" -d "$MODPATH/" >/dev/null 2>&1
+unzip -o "$ZIPFILE" "system/*" -d "$MODPATH/" >/dev/null 2>&1
+unzip -o "$ZIPFILE" "action.sh" "snapfest.png" -d "$MODPATH/" >/dev/null 2>&1
+cp -f "$MODPATH/snapfest.png" /data/local/tmp/ >/dev/null 2>&1
+cp -af "$TMPDIR/action.sh" "$MODPATH/action.sh" >/dev/null 2>&1
 
-sleep 2
+set_permissions() {
+  set_perm_recursive $MODPATH 0 0 0755 0644 2>/dev/null
+  set_perm $MODPATH/action.sh 0 0 0755 2>/dev/null
+  set_perm $MODPATH/post-fs-data.sh 0 0 0755 2>/dev/null
+  set_perm $MODPATH/service.sh 0 0 0755 2>/dev/null
+  set_perm $MODPATH/uninstall.sh 0 0 0755 2>/dev/null
+  set_perm "/data/local/tmp/snapfest.png" 0 0 0644 2>/dev/null
+}
 
-ui_print "- SnapFest preferences setup"
-cp -f "$MODPATH"/snapfest.png /data/local/tmp/ >/dev/null 2>&1
-cp -af "$TMPDIR"/action.sh "$MODPATH"/action.sh >/dev/null 2>&1
-set_perm "$MODPATH/action.sh" 0 0 0755 0755
-set_perm "/data/local/tmp/snapfest.png" 0 0 0644 0644
-
-sleep 2
+set_permissions
 
 random=$((RANDOM % 9))
 
