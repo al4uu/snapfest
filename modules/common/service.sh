@@ -247,6 +247,9 @@ done
 
 for zone in /sys/class/thermal/thermal_zone*; do
     [ -w "$zone/mode" ] && echo "disabled" > "$zone/mode" 2>/dev/null
+    if [ -e "$zone/policy" ]; then
+        echo "step_wise" > "$zone/policy"
+    fi
 done
 
 for prop in $(resetprop | grep 'thermal.*running' | awk -F '[][]' '{print $2}'); do
