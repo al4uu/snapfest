@@ -36,9 +36,17 @@ while [ -z "$(resetprop sys.boot_completed)" ]; do
     sleep 5
 done
 
-if [ -e /sys/class/kgsl/kgsl-3d0/devfreq/governor ]; then
-  echo "msm-adreno-tz" > /sys/class/kgsl/kgsl-3d0/devfreq/governor
-fi
+for gpu in /sys/class/kgsl/kgsl-3d0/devfreq; do
+    if [ -e "$gpu/governor" ]; then
+        echo "msm-adreno-tz" > "$gpu/governor"
+    fi
+
+    if [ -e "$gpu/available_frequencies" ]; then
+        freq=$(cat "$gpu/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
+        echo "$freq" > "$gpu/min_freq"
+        echo "$freq" > "$gpu/max_freq"
+    fi
+done
 
 find /sys/devices/system/cpu -maxdepth 1 -name 'cpu?' | while IFS= read -r cpu; do
   echo performance > "$cpu/cpufreq/scaling_governor"
