@@ -2,6 +2,12 @@
 - This module hasn’t been `Bumbu Racik` `based` since version `1.2`.
 - Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
 
+## 1.6 (2025-02-27)
+- Drop unstable `SurfaceFlinger` and touch-related `props`.
+- Drop `pnpmgr` and `msm` touch boost tweaks.
+- Disable `msm_thermal` `temp_throttle` for better CPU performance.
+- Fix syntax error in `CPU` online detection.
+
 ## 1.5 (2025-02-22)
 - Enable all `CPU` cores.
 - Add more package names and fix `sched_lib` write issues.
