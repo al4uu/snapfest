@@ -79,8 +79,6 @@ persist.sys.debug.gr.swapinterval=1
 ro.hwui.hardware.skiaglthreaded=true
 persist.sys.dalvik.hyperthreading=true
 dalvik.vm.image-dex2oat-filter=everything
-ro.surface_flinger.set_idle_timer_ms=1000
-ro.surface_flinger.set_touch_timer_ms=100
 persist.sys.perf.topAppRenderThreadBoost.enable=true
 "
 
@@ -100,9 +98,6 @@ persist.vendor.verbose_logging_enabled=false
 ro.surface_flinger.has_wide_color_display=true
 ro.surface_flinger.use_color_management=true
 persist.sys.turbosched.enable.coreApp.optimizer=true
-ro.surface_flinger.max_virtual_display_dimension=4096
-ro.surface_flinger.running_without_sync_framework=true
-ro.surface_flinger.force_hwc_copy_for_virtual_displays=true
 persist.device_config.runtime_native_boot.iorap_perfetto_enable=false
 persist.device_config.runtime_native_boot.iorap_readahead_enable=false
 "
