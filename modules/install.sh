@@ -11,7 +11,7 @@ KERNEL=$(uname -r)
 
 ui_print " "
 ui_print "* SnapFest Tweaks"
-ui_print "* Version 1.5 (GIT@99e6449)"
+ui_print "* Version 1.6 (GIT@64fed78)"
 ui_print "* @al4uu & @allprjkt"
 ui_print " "
 
