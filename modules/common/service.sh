@@ -385,9 +385,6 @@ echo "3" > /proc/sys/net/ipv4/tcp_fastopen
 echo "1" > /proc/sys/net/ipv4/tcp_low_latency
 echo "0" > /proc/sys/net/ipv4/tcp_timestamps
 
-echo "1" > /sys/power/pnpmgr/touch_boost
-echo "1" > /sys/module/msm_performance/parameters/touchboost
-
 echo "0" > /sys/kernel/debug/rpm_log
 echo "0" > /sys/module/rmnet_data/parameters/rmnet_data_log_level
 
