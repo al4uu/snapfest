@@ -334,7 +334,11 @@ echo "0" > /sys/kernel/msm_thermal/enabled
 echo "N" > /sys/module/msm_thermal/parameters/enabled
 echo "0" > /sys/module/msm_thermal/core_control/enabled
 echo "0" > /sys/module/msm_thermal/vdd_restriction/enabled
+echo "0" > /sys/module/msm_thermal/parameters/temp_throttle_enable
+
+echo "1" > /sys/devices/system/cpu/cpufreq/performance/pl
 echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
+echo "0" > /sys/devices/system/cpu/cpufreq/performance/hispeed_load
 
 echo "0" > /sys/kernel/ccci/debug
 echo "0" > /proc/sys/vm/page-cluster
