@@ -1,6 +1,12 @@
 # CL - SnapFest
 - This module hasn’t been `Bumbu Racik` `based` since version `1.2`.
 - Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
+- Dirty Flash work in `Manager` or `Direct install`.
+
+## 1.7 (2025-03-04)
+- Integrate `ThermVX` (`thermal tweaks`) into `SnapFest`.
+- Dropped/reverted the `temp_throttle` tweak and enabled all `CPU` cores.
+- Fix issue where `app/game` gets stuck on startup (`black/white screen`).
 
 ## 1.6 (2025-02-27)
 - Drop unstable `SurfaceFlinger` and touch-related `props`.
