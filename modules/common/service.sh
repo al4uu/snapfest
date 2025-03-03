@@ -224,63 +224,68 @@ if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
   echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
 fi
 
-list_thermal_services() {
-    find /system/etc/init /vendor/etc/init /odm/etc/init -type f 2>/dev/null | while read -r rc; do
-        grep -r "^service" "$rc" | awk '{print $2}'
-    done | grep thermal
+stop_services() { 
+    for _ in 1 2; do 
+        for prop in $(getprop | awk -F'[][]' '/logd|thermal/ && !/hal/ {print $2}'); do 
+            status=$(getprop "$prop") 
+            if [ "$status" = "running" ] || [ "$status" = "restarting" ]; then 
+                setprop "ctl.stop" "${prop#init.svc.}" 
+                stop "${prop#init.svc.}" 
+                sleep 1 
+            fi 
+        done 
+        sleep 5 
+    done 
 }
 
-for svc in $(list_thermal_services); do
-    stop "$svc" >/dev/null 2>&1
-    start "$svc" >/dev/null 2>&1
-done
-
-for pid in $(pgrep thermal); do
-    kill -SIGSTOP "$pid" >/dev/null 2>&1
-done
+stop_services
 
 for zone in /sys/class/thermal/thermal_zone*; do
     [ -w "$zone/mode" ] && echo "disabled" > "$zone/mode" 2>/dev/null
-    if [ -e "$zone/policy" ]; then
-        echo "step_wise" > "$zone/policy"
-    fi
+    [ -w "$zone/policy" ] && echo "step_wise" > "$zone/policy" 2>/dev/null
 done
 
-for prop in $(resetprop | grep 'thermal.*running' | awk -F '[][]' '{print $2}'); do
-    resetprop "$prop" freezed >/dev/null 2>&1
-done
+if command -v resetprop >/dev/null 2>&1; then
+    for prop in $(resetprop | grep 'thermal.*running' | awk -F '[][]' '{print $2}'); do
+        resetprop "$prop" freezed >/dev/null 2>&1
+    done
+fi
 
 for prop in dalvik.vm.dexopt.thermal-cutoff sys.thermal.enable ro.thermal_warmreset; do
     case "$prop" in
-        dalvik.vm.dexopt.thermal-cutoff)
-            resetprop "$prop" 0 >/dev/null 2>&1 ;;
-        sys.thermal.enable|ro.thermal_warmreset)
-            resetprop "$prop" false >/dev/null 2>&1 ;;
+        dalvik.vm.dexopt.thermal-cutoff) resetprop "$prop" 0 >/dev/null 2>&1 ;;
+        sys.thermal.enable|ro.thermal_warmreset) resetprop "$prop" false >/dev/null 2>&1 ;;
     esac
 done
 
-find /sys/devices/virtual/thermal -type f -exec chmod 000 {} + 2>/dev/null
-
 find /sys/ -type f -name "*throttling*" | while IFS= read -r throttling; do
-    if [ -w "$throttling" ]; then
-        echo 0 > "$throttling"
-    fi
+    [ -w "$throttling" ] && echo 0 > "$throttling" 2>/dev/null
 done
 
 find /sys/ -name enabled | grep 'msm_thermal' | while IFS= read -r msm_thermal_status; do
     if [ -r "$msm_thermal_status" ]; then
         msm_thermal_value=$(cat "$msm_thermal_status")
-        if [ "$msm_thermal_value" = 'Y' ]; then
-            echo 'N' > "$msm_thermal_status"
-        elif [ "$msm_thermal_value" = '1' ]; then
-            echo '0' > "$msm_thermal_status"
-        fi
+        case "$msm_thermal_value" in
+            Y) echo 'N' > "$msm_thermal_status" 2>/dev/null ;;
+            1) echo '0' > "$msm_thermal_status" 2>/dev/null ;;
+        esac
     fi
 done
 
-for service in logd traced statsd mi_thermald; do
-    su -c "stop $service"
+if [ -f /sys/devices/virtual/thermal/thermal_message/cpu_limits ]; then
+	for i in 0 2 4 6 7; do
+		maxfreq=$(cat /sys/devices/system/cpu/cpu$i/cpufreq/cpuinfo_max_freq 2>/dev/null)
+		[ -n "$maxfreq" ] && [ "$maxfreq" -gt 0 ] && echo "cpu$i $maxfreq" > /sys/devices/virtual/thermal/thermal_message/cpu_limits
+	done
+fi
+
+for svc in logd traced statsd mi_thermald; do
+    if getprop init.svc.$svc | grep -q "running"; then
+        su -c "stop $svc"
+    fi
 done
+
+find /sys/devices/virtual/thermal -type f -exec chmod 000 {} +
 
 lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain libunity.so libil2cpp.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
 
@@ -415,6 +420,8 @@ setprop debug.sf.high_fps_early_phase_offset_ns 6100000
 setprop debug.sf.high_fps_early_gl_phase_offset_ns 650000
 setprop debug.sf.high_fps_late_app_phase_offset_ns 100000
 setprop debug.sf.phase_offset_threshold_for_next_vsync_ns 6100000
+
+resetprop -n debug.thermal.throttle.support "no"
 
 settings put global auto_sync 0
 settings put global ble_scan_always_enabled 0
