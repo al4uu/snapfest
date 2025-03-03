@@ -48,12 +48,6 @@ for gpu in /sys/class/kgsl/kgsl-3d0/devfreq; do
     fi
 done
 
-for cpu in /sys/devices/system/cpu/cpu*; do
-    if [[ "$cpu" =~ cpu[0-9]+$ ]] && [ -e "$cpu/online" ]; then
-        echo 1 > "$cpu/online"
-    fi
-done
-
 find /sys/devices/system/cpu -maxdepth 1 -name 'cpu?' | while IFS= read -r cpu; do
   echo performance > "$cpu/cpufreq/scaling_governor"
 done
