@@ -49,7 +49,7 @@ for gpu in /sys/class/kgsl/kgsl-3d0/devfreq; do
 done
 
 for cpu in /sys/devices/system/cpu/cpu*; do
-    if echo "$cpu" | grep -qE 'cpu[0-9]+$' && [ -e "$cpu/online" ]; then
+    if [[ "$cpu" =~ cpu[0-9]+$ ]] && [ -e "$cpu/online" ]; then
         echo 1 > "$cpu/online"
     fi
 done
