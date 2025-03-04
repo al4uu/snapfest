@@ -1,6 +1,6 @@
 {
-  "version": "1.7",
-  "versionCode": 107,
-  "zipUrl": "https://github.com/al4uu/snapfest/releases/download/v1.7/snapfest-1.7-107-ec8163b-release.zip",
+  "version": "1.7.1",
+  "versionCode": 171,
+  "zipUrl": "https://github.com/al4uu/snapfest/releases/download/v1.7.1/snapfest-1.7.1-171-11bb3b9-release.zip",
   "changelog": "https://raw.githubusercontent.com/al4uu/snapfest/main/changelog.md"
 }
