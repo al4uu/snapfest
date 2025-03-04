@@ -264,13 +264,6 @@ find /sys/ -name enabled | grep 'msm_thermal' | while IFS= read -r msm_thermal_s
     fi
 done
 
-if [ -f /sys/devices/virtual/thermal/thermal_message/cpu_limits ]; then
-	for i in 0 2 4 6 7; do
-		maxfreq=$(cat /sys/devices/system/cpu/cpu$i/cpufreq/cpuinfo_max_freq 2>/dev/null)
-		[ -n "$maxfreq" ] && [ "$maxfreq" -gt 0 ] && echo "cpu$i $maxfreq" > /sys/devices/virtual/thermal/thermal_message/cpu_limits
-	done
-fi
-
 for svc in logd traced statsd mi_thermald; do
     if getprop init.svc.$svc | grep -q "running"; then
         su -c "stop $svc"
