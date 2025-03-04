@@ -3,6 +3,11 @@
 - Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
 - Dirty Flash work in `Manager` or `Direct install`.
 
+## 1.7.1 (2025-03-05)
+- Drop `Dynamic` Description in `post-fs-data`
+- Drop `battery` saver tweak (`MIUI/HyperOS` issue)
+- Drop `cpufreq` and `cpu_limits` tweak in `thermal_message` (ML & other `games` freeze issue)
+
 ## 1.7 (2025-03-04)
 - Integrate `ThermVX` (`thermal tweaks`) into `SnapFest`.
 - Dropped/reverted the `temp_throttle` tweak and enabled all `CPU` cores.
