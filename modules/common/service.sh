@@ -206,14 +206,6 @@ for gpu in /sys/class/kgsl/kgsl-3d0; do
   fi
 done
 
-if [ -f /sys/module/battery_saver/parameters/enabled ]; then
-    if grep -qo '[0-9]\+' /sys/module/battery_saver/parameters/enabled; then
-        echo "0" > /sys/module/battery_saver/parameters/enabled
-    else
-        echo "N" > /sys/module/battery_saver/parameters/enabled
-    fi
-fi
-
 if [ -e /sys/class/kgsl/kgsl-3d0/snapshot/dump ]; then
   echo "0" > /sys/class/kgsl/kgsl-3d0/snapshot/dump
 fi
