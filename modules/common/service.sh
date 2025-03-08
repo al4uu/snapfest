@@ -146,9 +146,16 @@ if [ -f "/proc/sys/net/ipv4/tcp_available_congestion_control" ]; then
         fi
     done
 
-    echo 1 > /proc/sys/net/ipv4/tcp_ecn
-    echo 3 > /proc/sys/net/ipv4/tcp_fastopen
-    echo 0 > /proc/sys/net/ipv4/tcp_syncookies
+    for param in tcp_ecn tcp_sack tcp_fastopen tcp_low_latency tcp_timestamps tcp_syncookies; do
+        case $param in
+            tcp_fastopen) value=3 ;;
+            tcp_ecn | tcp_sack | tcp_low_latency) value=1 ;;
+            tcp_timestamps | tcp_syncookies) value=0 ;;
+        esac
+        echo "$value" > "/proc/sys/net/ipv4/$param"
+    done
+
+    echo "0" > /sys/module/rmnet_data/parameters/rmnet_data_log_level
 fi
 
 calculate_mid_freq() {
@@ -328,6 +335,7 @@ echo "NEXT_BUDDY" > /sys/kernel/debug/sched_features
 echo "TTWU_QUEUE" > /sys/kernel/debug/sched_features
 
 echo "0" > /sys/kernel/ccci/debug
+echo "0" > /sys/kernel/debug/rpm_log
 echo "0" > /proc/sys/vm/page-cluster
 echo "120" > /proc/sys/vm/stat_interval
 echo "0" > /proc/sys/kernel/debug_locks
@@ -369,15 +377,6 @@ echo "80" > /proc/sys/vm/vfs_cache_pressure
 echo "0" > /sys/kernel/debug/dri/0/debug/enable
 echo "1" > /sys/module/spurious/parameters/noirqdebug
 echo "0" > /sys/kernel/debug/sde_rotator0/evtlog/enable
-
-echo "1" > /proc/sys/net/ipv4/tcp_ecn
-echo "1" > /proc/sys/net/ipv4/tcp_sack
-echo "3" > /proc/sys/net/ipv4/tcp_fastopen
-echo "1" > /proc/sys/net/ipv4/tcp_low_latency
-echo "0" > /proc/sys/net/ipv4/tcp_timestamps
-
-echo "0" > /sys/kernel/debug/rpm_log
-echo "0" > /sys/module/rmnet_data/parameters/rmnet_data_log_level
 
 sleep 5
 
