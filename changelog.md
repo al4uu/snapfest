@@ -1,7 +1,14 @@
 # CL - SnapFest
-- This module hasn’t been `Bumbu Racik` `based` since version `1.2`.
-- Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
 - Dirty Flash work in `Manager` or `Direct install`.
+- Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
+- After installing this `module` and rebooting, go straight to the `home screen` and wait for the `SnapFest notification` to pop up.
+
+## 1.8 (2025-03-08)
+- Optimize `mmc` devfreq scaling to improve `I/O` performance.
+- Replace `single-loop` stop with `two-loop` for better `thermal service` termination.
+- Refactor `TCP` configuration into structured logic.
+- Refactor `/sys/class/kgsl/kgsl-3d0` script to unify `GPU` tuning logic.
+- Refactor `msm_thermal` and `thermal_messege/sconfig` handling with checks for stability.
 
 ## 1.7.1 (2025-03-05)
 - Drop `Dynamic` Description in `post-fs-data`
