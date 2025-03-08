@@ -189,47 +189,45 @@ for cpu in /sys/devices/system/cpu/cpu[4-7]; do
 done
 
 for gpu in /sys/class/kgsl/kgsl-3d0; do
-  if [ -e "$gpu/adrenoboost" ]; then
-    echo "3" > "$gpu/adrenoboost"
-  fi
-  if [ -e "$gpu/devfreq/adrenoboost" ]; then
-    echo "0" > "$gpu/devfreq/adrenoboost"
-  fi
-  if [ -e "$gpu/throttling" ]; then
-    echo "0" > "$gpu/throttling"
-  fi
-  if [ -e "$gpu/bus_split" ]; then
-    echo "0" > "$gpu/bus_split"
-  fi
-  if [ -e "$gpu/force_clk_on" ]; then
-    echo "1" > "$gpu/force_clk_on"
-  fi
-  if [ -e "$gpu/force_bus_on" ]; then
-    echo "1" > "$gpu/force_bus_on"
-  fi
-  if [ -e "$gpu/force_rail_on" ]; then
-    echo "1" > "$gpu/force_rail_on"
-  fi
-  if [ -e "$gpu/force_no_nap" ]; then
-    echo "1" > "$gpu/force_no_nap"
-  fi
-  if [ -e "$gpu/idle_timer" ]; then
-    echo "80" > "$gpu/idle_timer"
-  fi
-  if [ -e "$gpu/max_pwrlevel" ]; then
-    echo "0" > "$gpu/max_pwrlevel"
-  fi
+    if [ -e "$gpu/adrenoboost" ]; then
+        echo "3" > "$gpu/adrenoboost"
+    fi
+    if [ -e "$gpu/devfreq/adrenoboost" ]; then
+        echo "0" > "$gpu/devfreq/adrenoboost"
+    fi
+    if [ -e "$gpu/throttling" ]; then
+        echo "0" > "$gpu/throttling"
+    fi
+    if [ -e "$gpu/bus_split" ]; then
+        echo "0" > "$gpu/bus_split"
+    fi
+    if [ -e "$gpu/force_clk_on" ]; then
+        echo "1" > "$gpu/force_clk_on"
+    fi
+    if [ -e "$gpu/force_bus_on" ]; then
+        echo "1" > "$gpu/force_bus_on"
+    fi
+    if [ -e "$gpu/force_rail_on" ]; then
+        echo "1" > "$gpu/force_rail_on"
+    fi
+    if [ -e "$gpu/force_no_nap" ]; then
+        echo "1" > "$gpu/force_no_nap"
+    fi
+    if [ -e "$gpu/idle_timer" ]; then
+        echo "100000000" > "$gpu/idle_timer"
+    fi
+    if [ -e "$gpu/max_pwrlevel" ]; then
+        echo "0" > "$gpu/max_pwrlevel"
+    fi
+    if [ -e "$gpu/snapshot/dump" ]; then
+        echo "0" > "$gpu/snapshot/dump"
+    fi
+    if [ -e "$gpu/snapshot/snapshot_crashdumper" ]; then
+        echo "0" > "$gpu/snapshot/snapshot_crashdumper"
+    fi
 done
 
-if [ -e /sys/class/kgsl/kgsl-3d0/snapshot/dump ]; then
-  echo "0" > /sys/class/kgsl/kgsl-3d0/snapshot/dump
-fi
-if [ -e /sys/class/kgsl/kgsl-3d0/snapshot/snapshot_crashdumper ]; then
-  echo "0" > /sys/class/kgsl/kgsl-3d0/snapshot/snapshot_crashdumper
-fi
-if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
-  echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
-fi
+[ -e /sys/module/adreno_idler/parameters/adreno_idler_active ] && echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
 
 stop_services() { 
     for _ in 1 2; do 
@@ -317,13 +315,6 @@ echo "0" > /proc/sys/kernel/panic
 echo "0" > /proc/sys/kernel/panic_on_warn
 echo "0" > /proc/sys/kernel/panic_on_oops
 echo "0" > /proc/sys/kernel/softlockup_panic
-
-echo "0" > /sys/class/kgsl/kgsl-3d0/bus_split
-echo "0" > /sys/class/kgsl/kgsl-3d0/throttling
-echo "1" > /sys/class/kgsl/kgsl-3d0/force_clk_on
-echo "1" > /sys/class/kgsl/kgsl-3d0/force_rail_on
-echo "1" > /sys/class/kgsl/kgsl-3d0/force_bus_on
-echo "1" > /sys/class/kgsl/kgsl-3d0/force_no_nap
 
 echo "0" > /sys/kernel/rcu_normal
 echo "0" > /sys/kernel/rcu_expedited
