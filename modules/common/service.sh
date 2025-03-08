@@ -236,21 +236,33 @@ done
 
 [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ] && echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
 
-stop_services() { 
-    for _ in 1 2; do 
-        for prop in $(getprop | awk -F'[][]' '/logd|thermal/ && !/hal/ {print $2}'); do 
-            status=$(getprop "$prop") 
-            if [ "$status" = "running" ] || [ "$status" = "restarting" ]; then 
-                setprop "ctl.stop" "${prop#init.svc.}" 
-                stop "${prop#init.svc.}" 
-                sleep 1 
-            fi 
-        done 
-        sleep 5 
-    done 
+is_valid_service() {
+    echo "$1" | grep -Eq '^[a-zA-Z0-9_]+$'
 }
 
-stop_services
+for i in 1 2; do
+    for service in $(getprop | grep -E 'logd|thermal' | cut -d '[' -f2 | cut -d ']' -f1 | grep -v 'hal'); do
+        if is_valid_service "$service"; then
+            status=$(getprop "$service")
+            if [ "$status" = "running" ] || [ "$status" = "restarting" ]; then
+                setprop ctl.stop "$service"
+            fi
+        fi
+    done
+    sleep 5
+done
+
+for i in 1 2; do
+    for service in $(getprop | grep -E 'logd|thermal' | cut -d '[' -f2 | cut -d ']' -f1 | grep -v 'hal'); do
+        if is_valid_service "$service"; then
+            status=$(getprop "$service")
+            if [ "$status" = "running" ] || [ "$status" = "restarting" ]; then
+                stop "$service"
+            fi
+        fi
+    done
+    sleep 5
+done
 
 for zone in /sys/class/thermal/thermal_zone*; do
     [ -w "$zone/mode" ] && echo "disabled" > "$zone/mode" 2>/dev/null
@@ -296,6 +308,8 @@ done
 [ -e /sys/module/msm_thermal/core_control/enabled ] && echo "0" > /sys/module/msm_thermal/core_control/enabled
 [ -e /sys/module/msm_thermal/vdd_restriction/enabled ] && echo "0" > /sys/module/msm_thermal/vdd_restriction/enabled
 [ -e /sys/devices/system/cpu/cpu_boost/sched_boost_on_input ] && echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
+
+sleep 10
 
 find /sys/devices/virtual/thermal -type f -exec chmod 000 {} +
 
