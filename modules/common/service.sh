@@ -285,6 +285,13 @@ for svc in logd traced statsd mi_thermald; do
     fi
 done
 
+[ -e /sys/devices/virtual/thermal/thermal_message/sconfig ] && echo "10" > /sys/devices/virtual/thermal/thermal_message/sconfig
+[ -e /sys/kernel/msm_thermal/enabled ] && echo "0" > /sys/kernel/msm_thermal/enabled
+[ -e /sys/module/msm_thermal/parameters/enabled ] && echo "N" > /sys/module/msm_thermal/parameters/enabled
+[ -e /sys/module/msm_thermal/core_control/enabled ] && echo "0" > /sys/module/msm_thermal/core_control/enabled
+[ -e /sys/module/msm_thermal/vdd_restriction/enabled ] && echo "0" > /sys/module/msm_thermal/vdd_restriction/enabled
+[ -e /sys/devices/system/cpu/cpu_boost/sched_boost_on_input ] && echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
+
 find /sys/devices/virtual/thermal -type f -exec chmod 000 {} +
 
 lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain libunity.so libil2cpp.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
@@ -328,12 +335,6 @@ echo "1" > /dev/stune/top-app/schedtune.boost
 echo "0" > /dev/stune/top-app/schedtune.prefer_idle
 echo "NEXT_BUDDY" > /sys/kernel/debug/sched_features
 echo "TTWU_QUEUE" > /sys/kernel/debug/sched_features
-
-echo "0" > /sys/kernel/msm_thermal/enabled
-echo "N" > /sys/module/msm_thermal/parameters/enabled
-echo "0" > /sys/module/msm_thermal/core_control/enabled
-echo "0" > /sys/module/msm_thermal/vdd_restriction/enabled
-echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
 
 echo "0" > /sys/kernel/ccci/debug
 echo "0" > /proc/sys/vm/page-cluster
