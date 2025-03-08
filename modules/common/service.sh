@@ -112,6 +112,21 @@ for queue in /sys/block/*/queue/; do
     fi
 done
 
+for mmc_tweak in /sys/class/devfreq/mmc*; do
+    [ -e "$mmc_tweak" ] || continue
+    echo "$target_freq" > "$mmc_tweak/min_freq"
+    echo "100" > "$mmc_tweak/up_threshold"
+    echo "20" > "$mmc_tweak/down_threshold"
+    echo "10" > "$mmc_tweak/polling_interval"
+done
+
+for mmc_host in /sys/class/devfreq/mmc*/clk_scaling; do
+    [ -e "$mmc_host" ] || continue
+    echo "90" > "$mmc_host/up_threshold"
+    echo "15" > "$mmc_host/down_threshold"
+    echo "50" > "$mmc_host/polling_interval"
+done
+
 for dir in /sys/block/mmcblk0 /sys/block/mmcblk1 /sys/block/sd*; do
     if [ -d "$dir" ]; then
         [ ! -e "$dir/queue/iostats" ] || echo 0 > "$dir/queue/iostats"
