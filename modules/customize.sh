@@ -1,24 +1,41 @@
-#!/system/bin/sh
-SKIPMOUNT=false
-PROPFILE=false
-POSTFSDATA=true
-LATESTARTSERVICE=true
+SKIPUNZIP=1
 
-DEVICE=$(getprop ro.product.manufacturer)
-MODEL=$(getprop ro.product.device)
-SELINUX=$(getenforce)
-KERNEL=$(uname -r)
+print_info() {
+  ui_print "- Device : $(getprop ro.product.manufacturer) ($(getprop ro.product.device))"
+  ui_print "- SELinux : $(getenforce)"
+  ui_print "- Linux Kernel : $(uname -r)"
+}
 
-ui_print " "
-ui_print "* SnapFest Tweaks"
-ui_print "* Version 1.8 (GIT@07bde8a)"
-ui_print "* @al4uu & @allprjkt"
-ui_print " "
+print_info
 
-ui_print "- Device : $DEVICE ($MODEL)"
-ui_print "- SELinux Status : $SELINUX"
-ui_print "- Kernel Version : $KERNEL"
-ui_print " "
+detect_installer() {
+  if [ -d "/data/adb/ksu" ]; then
+    ROOT_METHOD="KernelSU"
+    if command -v su &>/dev/null; then
+        ROOT_VERSION=$(su --version 2>/dev/null | cut -d ':' -f 1)
+    fi
+    ui_print "- Installing From : $ROOT_METHOD ($ROOT_VERSION)"
+  
+  elif [ -d "/data/adb/magisk" ]; then
+    ROOT_METHOD="Magisk"
+    if command -v magisk &>/dev/null; then
+        ROOT_VERSION=$(magisk -V)
+    fi
+    ui_print "- Installing From : $ROOT_METHOD ($ROOT_VERSION)"
+  
+  elif [ -d "/data/adb/ap" ]; then
+    ROOT_METHOD="APatch"
+    if [ -f "/data/adb/ap/version" ]; then
+        ROOT_VERSION=$(cat /data/adb/ap/version)
+    fi
+    ui_print "- Installing From : $ROOT_METHOD ($ROOT_VERSION)"
+  
+  else
+    ui_print "- Unknown installer"
+  fi
+}
+
+detect_installer
 
 detect_snapdragon() {
   if [ -d /sys/class/kgsl/kgsl-3d0/devfreq ] || [ -d /sys/devices/platform/kgsl-2d0.0/kgsl ]; then
@@ -50,32 +67,38 @@ else
 fi
 
 remove_bumbu_racik() {
-  path="$1"
-  if [ -d "$path" ]; then
-    ui_print "- Bumbu Racik module detected. Removing"
-    rm -rf "$path" && ui_print "- Successfully removed Bumbu Racik" || {
-      ui_print "! Failed to remove Bumbu Racik"
-      abort "! Installation aborted."
-    }
-  fi
+  for path in "/data/adb/modules_update/bumbu_racik" "/data/adb/modules/bumbu_racik"; do
+    if [ -d "$path" ]; then
+      ui_print "- Bumbu Racik module detected. Removing..."
+      if rm -rf "$path"; then
+        ui_print "- Successfully removed Bumbu Racik"
+      else
+        abort "! Failed to remove Bumbu Racik. Installation aborted."
+      fi
+    fi
+  done
 }
 
-remove_bumbu_racik "/data/adb/modules_update/bumbu_racik"
-remove_bumbu_racik "/data/adb/modules/bumbu_racik"
+remove_bumbu_racik
 
-ui_print "- Extracting module files"
-unzip -o "$ZIPFILE" "system/*" -d "$MODPATH/" >/dev/null 2>&1
-unzip -o "$ZIPFILE" "action.sh" "snapfest.png" -d "$MODPATH/" >/dev/null 2>&1
-cp -f "$MODPATH/snapfest.png" /data/local/tmp/ >/dev/null 2>&1
-cp -af "$TMPDIR/action.sh" "$MODPATH/action.sh" >/dev/null 2>&1
+extracting_module() {
+  ui_print "- Extracting module files"
+  unzip -o "$ZIPFILE" 'action.sh' -d "$MODPATH" > /dev/null 2>&1
+  unzip -o "$ZIPFILE" 'service.sh' -d "$MODPATH" > /dev/null 2>&1
+  unzip -o "$ZIPFILE" 'uninstall.sh' -d "$MODPATH" > /dev/null 2>&1
+  unzip -o "$ZIPFILE" 'post-fs-data.sh' -d "$MODPATH" > /dev/null 2>&1
+  unzip -o "$ZIPFILE" 'module.prop' -d "$MODPATH" > /dev/null 2>&1
+  unzip -o "$ZIPFILE" 'snapfest.png' -d "/data/local/tmp" > /dev/null 2>&1
+}
+
+extracting_module
 
 set_permissions() {
-  set_perm_recursive $MODPATH 0 0 0755 0644 2>/dev/null
-  set_perm $MODPATH/action.sh 0 0 0755 2>/dev/null
-  set_perm $MODPATH/post-fs-data.sh 0 0 0755 2>/dev/null
-  set_perm $MODPATH/service.sh 0 0 0755 2>/dev/null
-  set_perm $MODPATH/uninstall.sh 0 0 0755 2>/dev/null
-  set_perm "/data/local/tmp/snapfest.png" 0 0 0644 2>/dev/null
+  ui_print "- Setting permissions"
+  set_perm_recursive "$MODPATH" 0 0 0755 0644
+  for file in action.sh service.sh post-fs-data.sh uninstall.sh; do
+    set_perm "$MODPATH/$file" 0 0 0755
+  done
 }
 
 set_permissions
@@ -103,5 +126,3 @@ elif [ $random -eq 8 ]; then
 else
     ui_print "- Unleash Snapdragon Efficiency !"
 fi
-
-ui_print " "
