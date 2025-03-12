@@ -41,7 +41,6 @@ ro.vendor.perf.scroll_opt=true
 persist.sys.purgeable_assets=1
 dalvik.vm.execution-mode=int:jit
 vendor.perf.framepacing.enable=1
-dalvik.vm.dexopt.thermal-cutoff=0
 dalvik.vm.dex2oat-filter=everything
 persist.sys.debug.gr.swapinterval=1
 ro.hwui.hardware.skiaglthreaded=true
