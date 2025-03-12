@@ -1,13 +1,11 @@
 #!/system/bin/sh
 
-SERVICE_SCRIPT="/data/adb/modules/snapfest/service.sh"
-MODULE_PROP="/data/adb/modules/snapfest/module.prop"
+MODPATH="${0%/*}"
+SERVICE_SCRIPT="$MODPATH/service.sh"
+MODULE_PROP="$MODPATH/module.prop"
 
 version=$(grep "^version=" "$MODULE_PROP" | cut -d'=' -f2)
-
-if [ -z "$version" ]; then
-  version="Unknown"
-fi
+[ -z "$version" ] && version="Unknown"
 
 service_pid=$(shuf -i 1000-9999 -n 1)
 
@@ -19,7 +17,8 @@ echo "- Restarting SnapFest Service.."
 
 if [ -f "$SERVICE_SCRIPT" ]; then
   sh "$SERVICE_SCRIPT" &
-  echo "- SnapFest Service has been restarted !"
+  echo "- SnapFest Service has been restarted!"
+  echo "- Please wait until the SnapFest notification appears."
   echo "- Service script executed with PID : ($!)"
 else
   echo "- service.sh not found."
