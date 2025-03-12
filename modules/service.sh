@@ -234,84 +234,18 @@ for gpu in /sys/class/kgsl/kgsl-3d0; do
     fi
 done
 
-[ -e /sys/module/adreno_idler/parameters/adreno_idler_active ] && echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
-
-is_valid_service() {
-    echo "$1" | grep -Eq '^[a-zA-Z0-9_]+$'
-}
-
-for i in 1 2; do
-    for service in $(getprop | grep -E 'logd|thermal' | cut -d '[' -f2 | cut -d ']' -f1 | grep -v 'hal'); do
-        if is_valid_service "$service"; then
-            status=$(getprop "$service")
-            if [ "$status" = "running" ] || [ "$status" = "restarting" ]; then
-                setprop ctl.stop "$service"
-            fi
-        fi
-    done
-    sleep 5
-done
-
-for i in 1 2; do
-    for service in $(getprop | grep -E 'logd|thermal' | cut -d '[' -f2 | cut -d ']' -f1 | grep -v 'hal'); do
-        if is_valid_service "$service"; then
-            status=$(getprop "$service")
-            if [ "$status" = "running" ] || [ "$status" = "restarting" ]; then
-                stop "$service"
-            fi
-        fi
-    done
-    sleep 5
-done
-
-for zone in /sys/class/thermal/thermal_zone*; do
-    [ -w "$zone/mode" ] && echo "disabled" > "$zone/mode" 2>/dev/null
-    [ -w "$zone/policy" ] && echo "step_wise" > "$zone/policy" 2>/dev/null
-done
-
-if command -v resetprop >/dev/null 2>&1; then
-    for prop in $(resetprop | grep 'thermal.*running' | awk -F '[][]' '{print $2}'); do
-        resetprop "$prop" freezed >/dev/null 2>&1
-    done
-fi
-
-for prop in dalvik.vm.dexopt.thermal-cutoff sys.thermal.enable ro.thermal_warmreset; do
-    case "$prop" in
-        dalvik.vm.dexopt.thermal-cutoff) resetprop "$prop" 0 >/dev/null 2>&1 ;;
-        sys.thermal.enable|ro.thermal_warmreset) resetprop "$prop" false >/dev/null 2>&1 ;;
-    esac
-done
-
 find /sys/ -type f -name "*throttling*" | while IFS= read -r throttling; do
     [ -w "$throttling" ] && echo 0 > "$throttling" 2>/dev/null
 done
 
-find /sys/ -name enabled | grep 'msm_thermal' | while IFS= read -r msm_thermal_status; do
-    if [ -r "$msm_thermal_status" ]; then
-        msm_thermal_value=$(cat "$msm_thermal_status")
-        case "$msm_thermal_value" in
-            Y) echo 'N' > "$msm_thermal_status" 2>/dev/null ;;
-            1) echo '0' > "$msm_thermal_status" 2>/dev/null ;;
-        esac
-    fi
-done
-
-for svc in logd traced statsd mi_thermald; do
+for svc in logd traced statsd; do
     if getprop init.svc.$svc | grep -q "running"; then
         su -c "stop $svc"
     fi
 done
 
-[ -e /sys/devices/virtual/thermal/thermal_message/sconfig ] && echo "10" > /sys/devices/virtual/thermal/thermal_message/sconfig
-[ -e /sys/kernel/msm_thermal/enabled ] && echo "0" > /sys/kernel/msm_thermal/enabled
-[ -e /sys/module/msm_thermal/parameters/enabled ] && echo "N" > /sys/module/msm_thermal/parameters/enabled
-[ -e /sys/module/msm_thermal/core_control/enabled ] && echo "0" > /sys/module/msm_thermal/core_control/enabled
-[ -e /sys/module/msm_thermal/vdd_restriction/enabled ] && echo "0" > /sys/module/msm_thermal/vdd_restriction/enabled
+[ -e /sys/module/adreno_idler/parameters/adreno_idler_active ] && echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
 [ -e /sys/devices/system/cpu/cpu_boost/sched_boost_on_input ] && echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
-
-sleep 10
-
-find /sys/devices/virtual/thermal -type f -exec chmod 000 {} +
 
 lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain libunity.so libil2cpp.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
 
@@ -426,8 +360,6 @@ setprop debug.sf.high_fps_early_gl_phase_offset_ns 650000
 setprop debug.sf.high_fps_late_app_phase_offset_ns 100000
 setprop debug.sf.phase_offset_threshold_for_next_vsync_ns 6100000
 
-resetprop -n debug.thermal.throttle.support "no"
-
 settings put global auto_sync 0
 settings put global ble_scan_always_enabled 0
 settings put global wifi_scan_always_enabled 0
@@ -449,7 +381,6 @@ settings put system nearby_scanning_permission_allowed 0
 pm disable com.qualcomm.qti.cne
 pm disable com.qualcomm.location.XT
 
-cmd thermalservice override-status 0
 cmd power set-adaptive-power-saver-enabled false
 cmd power set-fixed-performance-mode-enabled true
 
