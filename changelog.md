@@ -8,7 +8,7 @@
 - Drop `ThermVX` (`thermal tweak`).
 - Drop some of the `properties` tweak.
 - Switch from `install.sh` to `customize.sh` to simplify `installation` process.
-- action.sh : Simplified path handling using `MODPATH`.
+- `action.sh` : Simplified path handling using `MODPATH`.
 
 ## 1.8 (2025-03-08)
 - Optimize `mmc` devfreq scaling to improve `I/O` performance.
