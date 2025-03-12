@@ -365,7 +365,6 @@ settings put global ble_scan_always_enabled 0
 settings put global wifi_scan_always_enabled 0
 settings put global hotword_detection_enabled 0
 settings put global activity_starts_logging_enabled 0
-settings put global network_recommendations_enabled 0
 settings put secure adaptive_sleep 0
 settings put secure screensaver_enabled 0
 settings put secure send_action_app_error 0
