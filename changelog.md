@@ -1,7 +1,14 @@
 # CL - SnapFest
-- Dirty Flash work in `Manager` or `Direct install`.
-- Clean Flash recommended. Wipe `Dalvik/ART` cache before and after install.
+- `Dirty Flash` work in `Manager` or `Direct install`.
+- Do a `Clean Flash` of this `module` if you're on a version below `2.0`.
 - After installing this `module` and rebooting, go straight to the `home screen` and wait for the `SnapFest notification` to pop up.
+
+## 2.0 (2025-03-13)
+- Delete `C` Source.
+- Drop `ThermVX` (`thermal tweak`).
+- Drop some of the `properties` tweak.
+- Switch from `install.sh` to `customize.sh` to simplify `installation` process.
+- action.sh : Simplified path handling using `MODPATH`.
 
 ## 1.8 (2025-03-08)
 - Optimize `mmc` devfreq scaling to improve `I/O` performance.
