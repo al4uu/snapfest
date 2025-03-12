@@ -13,8 +13,8 @@
 - Use a `CLO/CAF-based` kernel to optimize performance (if available on your `device`).
 
 ## ❓ Requirements
-- Basic knowledge of Android modifications.
-- Android device with Root access **(Magisk/KernelSU/APatch)**.
+- Basic knowledge of Android `modifications`.
+- Android `device` with `Root` access (`Magisk/KernelSU/APatch`).
 
 ## 🤓 Installation
 1. Download the latest `release` from the [**Releases Page**](https://github.com/al4uu/snapfest/releases)
