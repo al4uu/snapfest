@@ -13,7 +13,6 @@ settings delete global ble_scan_always_enabled
 settings delete global wifi_scan_always_enabled
 settings delete global hotword_detection_enabled
 settings delete global activity_starts_logging_enabled
-settings delete global network_recommendations_enabled
 settings delete secure adaptive_sleep
 settings delete secure screensaver_enabled
 settings delete secure send_action_app_error
