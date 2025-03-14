@@ -59,32 +59,22 @@ for ufsemmc in /sys/class/devfreq/mmc*; do
     [ -w "$ufsemmc/governor" ] && echo "performance" > "$ufsemmc/governor"
 done
 
-for path in /sys/class/devfreq/*cpu-ddr-latfloor* /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu-cpu-ddr-bw /sys/class/devfreq/*cpu-cpu-llcc-bw; do
+for path in /sys/class/devfreq/*cpu-ddr-latfloor* /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu-cpu-ddr-bw /sys/class/devfreq/*cpu-cpu-llcc-bw /sys/class/devfreq/*gpubw*; do
     if [ -e "$path/governor" ]; then
         echo "performance" > "$path/governor"
     fi
-done
+done &
 
-for path in /sys/class/devfreq/*gpubw*; do
-    if [ -e "$path/governor" ]; then
-        echo "performance" > "$path/governor"
-    fi
-done
-
-for path in /sys/class/kgsl/*/devfreq; do
-    if [ -f "$path/available_frequencies" ]; then
-        freq=$(cat "$path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
-        if [ -n "$freq" ]; then
-            echo "$freq" > "$path/min_freq"
-            echo "$freq" > "$path/max_freq"
-        fi
-    fi
-done
+for path in /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu*-bw /sys/class/devfreq/*llccbw* /sys/class/devfreq/*bus_llcc* /sys/class/devfreq/*bus_ddr* /sys/class/devfreq/*l3-* /sys/class/devfreq/*memlat* /sys/class/devfreq/*cpubw* /sys/class/devfreq/*gpubw* /sys/class/devfreq/*kgsl-ddr-qos*; do
+    [ ! -d "$path" ] && continue
+    freq=$(cat "$path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
+    [ -n "$freq" ] && chmod 644 "$path/max_freq" && echo "$freq" > "$path/max_freq" && chmod 444 "$path/max_freq"
+    [ -n "$freq" ] && chmod 644 "$path/min_freq" && echo "$freq" > "$path/min_freq" && chmod 444 "$path/min_freq"
+done &
 
 for component in LLCC L3 DDR DDRQOS; do
     base_path="/sys/devices/system/cpu/bus_dcvs/$component"
     [ ! -d "$base_path" ] && continue
-
     freq_file="$base_path/available_frequencies"
     [ ! -f "$freq_file" ] && continue
 
@@ -92,9 +82,16 @@ for component in LLCC L3 DDR DDRQOS; do
     [ -z "$freq" ] && continue
 
     for path in "$base_path"/*/max_freq "$base_path"/*/min_freq; do
-        [ -e "$path" ] && apply "$freq" "$path"
-    done
+        [ -e "$path" ] && chmod 644 "$path" && echo "$freq" > "$path" && chmod 444 "$path"
+    done &
 done
+
+gpu_path="/sys/class/kgsl/kgsl-3d0/devfreq"
+if [ -d "$gpu_path" ] && [ -f "$gpu_path/available_frequencies" ]; then
+    freq=$(cat "$gpu_path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
+    [ -n "$freq" ] && chmod 644 "$gpu_path/min_freq" && echo "$freq" > "$gpu_path/min_freq" && chmod 444 "$gpu_path/min_freq"
+    [ -n "$freq" ] && chmod 644 "$gpu_path/max_freq" && echo "$freq" > "$gpu_path/max_freq" && chmod 444 "$gpu_path/max_freq"
+fi
 
 for queue in /sys/block/*/queue/; do
     if [ -f "$queue/scheduler" ]; then
