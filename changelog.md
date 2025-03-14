@@ -3,6 +3,18 @@
 - Do a `Clean Flash` of this `module` if you're on a version below `2.0`.
 - After installing this `module` and rebooting, go straight to the `home screen` and wait for the `SnapFest notification` to pop up.
 
+## 2.1 (2025-03-15)
+- Simplify `network` tweaks.
+- Bring back `Touch Boost` tweaks.
+- Drop unnecessary `GPU governor` set.
+- Drop `CPU` `mid-freq` scaling config.
+- Merge apply logic to set `CPU max/min freq`.
+- Disable `TTWU_QUEUE` to reduce wake-up latency.
+- Refine `MMC` and `I/O` settings for enhanced performance.
+- Replace old script with `eMMC` and `UFS` max perf-tuning.
+- Update `Dynamic Description` to include `BOARD_PLATFORM` using `getprop`.
+- Replace old boost script with max freq tuning for `CPU, GPU, Bus, and Memory`.
+
 ## 2.0 (2025-03-13)
 - Delete `C` Source.
 - Drop `ThermVX` (`thermal tweak`).
