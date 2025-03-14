@@ -52,12 +52,17 @@ find /sys/devices/system/cpu -maxdepth 1 -name 'cpu?' | while IFS= read -r cpu; 
   echo performance > "$cpu/cpufreq/scaling_governor"
 done
 
-for ufsemmc in /sys/class/devfreq/*.ufshc; do
-    [ -w "$ufsemmc/governor" ] && echo "performance" > "$ufsemmc/governor"
-done
-for ufsemmc in /sys/class/devfreq/mmc*; do
-    [ -w "$ufsemmc/governor" ] && echo "performance" > "$ufsemmc/governor"
-done
+for path in /sys/class/devfreq/*.ufshc /sys/class/devfreq/mmc*; do
+    if [ -w "$path/governor" ]; then
+        echo "performance" > "$path/governor"
+    fi
+
+    if [ -f "$path/available_frequencies" ]; then
+        freq=$(cat "$path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
+        [ -n "$freq" ] && chmod 644 "$path/max_freq" && echo "$freq" > "$path/max_freq" && chmod 444 "$path/max_freq"
+        [ -n "$freq" ] && chmod 644 "$path/min_freq" && echo "$freq" > "$path/min_freq" && chmod 444 "$path/min_freq"
+    fi
+done &
 
 for path in /sys/class/devfreq/*cpu-ddr-latfloor* /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu-cpu-ddr-bw /sys/class/devfreq/*cpu-cpu-llcc-bw /sys/class/devfreq/*gpubw*; do
     if [ -e "$path/governor" ]; then
