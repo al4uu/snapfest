@@ -2,6 +2,7 @@
 
 ROOT_METHOD="Unknown"
 ROOT_VERSION="Unknown"
+BOARD_PLATFORM="Unknown"
 
 if [ -d "/data/adb/ksu" ]; then
     ROOT_METHOD="KernelSU"
@@ -20,6 +21,8 @@ elif [ -d "/data/adb/ap" ]; then
     fi
 fi
 
+BOARD_PLATFORM=$(getprop ro.board.platform | tr '[:lower:]' '[:upper:]')
+
 MODDIR="/data/adb/modules/snapfest"
 MODULE_PROP="${MODDIR}/module.prop"
 BACKUP_PROP="${MODULE_PROP}.orig"
@@ -29,7 +32,7 @@ if [ -f "$MODULE_PROP" ] && [ ! -f "$BACKUP_PROP" ]; then
 fi
 
 if [ -f "$MODULE_PROP" ]; then
-    sed -i "s/^description=.*/description=[ 😋 SnapFest is running | ✅ ${ROOT_METHOD} (${ROOT_VERSION}) ] Special performance module designed for Snapdragon devices !/" "$MODULE_PROP"
+    sed -i "s/^description=.*/description=[ 😋 SnapFest is running on ${BOARD_PLATFORM} | ✅ ${ROOT_METHOD} (${ROOT_VERSION}) ] Special performance module designed for Snapdragon devices!/" "$MODULE_PROP"
 fi
 
 while [ -z "$(resetprop sys.boot_completed)" ]; do
