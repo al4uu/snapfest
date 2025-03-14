@@ -99,19 +99,28 @@ if [ -d "$gpu_path" ] && [ -f "$gpu_path/available_frequencies" ]; then
     [ -n "$freq" ] && chmod 644 "$gpu_path/max_freq" && echo "$freq" > "$gpu_path/max_freq" && chmod 444 "$gpu_path/max_freq"
 fi
 
-for queue in /sys/block/*/queue/; do
-    if [ -f "$queue/scheduler" ]; then
-        sched=$(cat "$queue/scheduler")
-        for algo in cfq noop kyber bfq mq-deadline none; do
-            if echo "$sched" | grep -q "$algo"; then
-                echo "$algo" > "$queue/scheduler"
-                break
-            fi
-        done
-        echo 0 > "$queue/add_random"
-        echo 0 > "$queue/iostats"
-        echo 64 > "$queue/read_ahead_kb"
-        echo 512 > "$queue/nr_requests"
+target_freq=$(cat /sys/class/devfreq/mmc*/available_frequencies | tr ' ' '\n' | sort -nr | head -n 1)
+
+for block in /sys/block/*; do
+    queue="$block/queue"
+    if [ -d "$queue" ]; then
+        if [ -f "$queue/scheduler" ]; then
+            sched=$(cat "$queue/scheduler")
+            found=0
+            for algo in cfq noop kyber bfq mq-deadline none; do
+                if echo "$sched" | grep -q "$algo"; then
+                    echo "$algo" > "$queue/scheduler"
+                    found=1
+                    break
+                fi
+            done
+            [ "$found" -eq 0 ] && echo "mq-deadline" > "$queue/scheduler"
+        fi
+
+        echo "0" > "$queue/add_random"
+        echo "0" > "$queue/iostats"
+        echo "32" > "$queue/read_ahead_kb"
+        echo "64" > "$queue/nr_requests"
     fi
 done
 
@@ -128,15 +137,6 @@ for mmc_host in /sys/class/devfreq/mmc*/clk_scaling; do
     echo "90" > "$mmc_host/up_threshold"
     echo "15" > "$mmc_host/down_threshold"
     echo "50" > "$mmc_host/polling_interval"
-done
-
-for dir in /sys/block/mmcblk0 /sys/block/mmcblk1 /sys/block/sd*; do
-    if [ -d "$dir" ]; then
-        [ ! -e "$dir/queue/iostats" ] || echo 0 > "$dir/queue/iostats"
-        [ ! -e "$dir/queue/nr_requests" ] || echo 64 > "$dir/queue/nr_requests"
-        [ ! -e "$dir/queue/add_random" ] || echo 0 > "$dir/queue/add_random"
-        [ ! -e "$dir/queue/read_ahead_kb" ] || echo 32 > "$dir/queue/read_ahead_kb"
-    fi
 done
 
 if [ -f "/proc/sys/net/ipv4/tcp_available_congestion_control" ]; then
