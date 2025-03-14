@@ -240,7 +240,7 @@ echo "0" > /proc/sys/kernel/hung_task_timeout_secs
 echo "1" > /dev/stune/top-app/schedtune.boost
 echo "0" > /dev/stune/top-app/schedtune.prefer_idle
 echo "NEXT_BUDDY" > /sys/kernel/debug/sched_features
-echo "TTWU_QUEUE" > /sys/kernel/debug/sched_features
+echo "NO_TTWU_QUEUE" > /sys/kernel/debug/sched_features
 
 echo "0" > /sys/kernel/ccci/debug
 echo "0" > /sys/kernel/debug/rpm_log
