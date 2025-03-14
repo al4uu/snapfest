@@ -158,43 +158,6 @@ if [ -f "/proc/sys/net/ipv4/tcp_available_congestion_control" ]; then
     echo "0" > /sys/module/rmnet_data/parameters/rmnet_data_log_level
 fi
 
-calculate_mid_freq() {
-    local cpu_path=$1
-    local min_freq=$(cat "$cpu_path/cpufreq/cpuinfo_min_freq")
-    local max_freq=$(cat "$cpu_path/cpufreq/cpuinfo_max_freq")
-    echo $(( (min_freq + max_freq) / 2 ))
-}
-
-for cpu in /sys/devices/system/cpu/cpu[0-3]; do
-    if [ -d "$cpu/cpufreq" ]; then
-        mid_freq=$(calculate_mid_freq "$cpu")
-        max_freq=$(cat "$cpu/cpufreq/cpuinfo_max_freq")
-
-        if [ -f "$cpu/cpufreq/scaling_governor" ]; then
-            governor=$(cat "$cpu/cpufreq/scaling_governor")
-            if [ "$governor" = "schedutil" ]; then
-                echo 75 > "$cpu/cpufreq/schedutil/hispeed_load"
-                echo 0 > "$cpu/cpufreq/schedutil/iowait_boost_enable"
-                echo 300 > "$cpu/cpufreq/schedutil/up_rate_limit_us"
-                echo 2500 > "$cpu/cpufreq/schedutil/down_rate_limit_us"
-            fi
-        fi
-
-        echo "$mid_freq" > "$cpu/cpufreq/scaling_min_freq"
-        echo "$max_freq" > "$cpu/cpufreq/scaling_max_freq"
-    fi
-done
-
-for cpu in /sys/devices/system/cpu/cpu[4-7]; do
-    if [ -d "$cpu/cpufreq" ]; then
-        mid_freq=$(calculate_mid_freq "$cpu")
-        max_freq=$(cat "$cpu/cpufreq/cpuinfo_max_freq")
-
-        echo "$mid_freq" > "$cpu/cpufreq/scaling_min_freq"
-        echo "$max_freq" > "$cpu/cpufreq/scaling_max_freq"
-    fi
-done
-
 for gpu in /sys/class/kgsl/kgsl-3d0; do
     if [ -e "$gpu/adrenoboost" ]; then
         echo "3" > "$gpu/adrenoboost"
