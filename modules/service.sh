@@ -215,15 +215,6 @@ find /sys/ -type f -name "*throttling*" | while IFS= read -r throttling; do
     [ -w "$throttling" ] && echo 0 > "$throttling" 2>/dev/null
 done
 
-for svc in logd traced statsd; do
-    if getprop init.svc.$svc | grep -q "running"; then
-        su -c "stop $svc"
-    fi
-done
-
-[ -e /sys/module/adreno_idler/parameters/adreno_idler_active ] && echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
-[ -e /sys/devices/system/cpu/cpu_boost/sched_boost_on_input ] && echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
-
 lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain libunity.so libil2cpp.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
 
 for path in /proc/sys/kernel/sched_lib_name /proc/sys/kernel/sched_lib_mask_force /proc/sys/walt/sched_lib_name /proc/sys/walt/sched_lib_mask_force; do
@@ -235,6 +226,23 @@ for path in /proc/sys/kernel/sched_lib_name /proc/sys/kernel/sched_lib_mask_forc
         fi
     fi
 done
+
+for svc in logd traced statsd; do
+    if getprop init.svc.$svc | grep -q "running"; then
+        su -c "stop $svc"
+    fi
+done
+
+for touch in /sys/module/msm_performance/parameters/touchboost /sys/power/pnpmgr/touch_boost /proc/perfmgr/tchbst/kernel/tb_enable /sys/devices/virtual/touch/touch_boost /sys/module/msm_perfmon/parameters/touch_boost_enable; do
+    if [ -f "$touch" ]; then
+        chmod 644 "$touch" >/dev/null 2>&1
+        echo "1" > "$touch" 2>/dev/null
+        chmod 444 "$touch" >/dev/null 2>&1
+    fi
+done
+
+[ -e /sys/module/adreno_idler/parameters/adreno_idler_active ] && echo "1" > /sys/module/adreno_idler/parameters/adreno_idler_active
+[ -e /sys/devices/system/cpu/cpu_boost/sched_boost_on_input ] && echo "0" > /sys/devices/system/cpu/cpu_boost/sched_boost_on_input
 
 busybox=$(find /data/adb/ -type f -name busybox | head -n 1)
 $busybox swapoff /dev/block/zram0
