@@ -52,6 +52,19 @@ for path in /sys/class/devfreq/*.ufshc /sys/class/devfreq/mmc*; do
     fi
 done &
 
+for path in /sys/devices/system/cpu/*/cpufreq; do
+    cpu_maxfreq=$(cat "$path/cpuinfo_max_freq")
+    
+    for freq in scaling_max_freq scaling_min_freq; do
+        target="$path/$freq"
+        if [ -f "$target" ]; then
+            chmod 644 "$target" >/dev/null 2>&1
+            echo "$cpu_maxfreq" > "$target" 2>/dev/null
+            chmod 444 "$target" >/dev/null 2>&1
+        fi
+    done
+done &
+
 for path in /sys/class/devfreq/*cpu-ddr-latfloor* /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu-cpu-ddr-bw /sys/class/devfreq/*cpu-cpu-llcc-bw /sys/class/devfreq/*gpubw*; do
     if [ -e "$path/governor" ]; then
         echo "performance" > "$path/governor"
