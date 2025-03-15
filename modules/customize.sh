@@ -1,3 +1,4 @@
+# shellcheck disable=SC2034
 SKIPUNZIP=1
 
 print_info() {
@@ -80,6 +81,20 @@ remove_bumbu_racik() {
 }
 
 remove_bumbu_racik
+
+verify_module() {
+  abort_corrupted() {
+    ui_print "! Unable to extract verify.sh!"
+    abort "! This zip may be corrupted, please try downloading again"
+  }
+
+  ui_print "- Extracting verify.sh"
+  unzip -o "$ZIPFILE" 'verify.sh' -d "$TMPDIR" >&2
+  [ ! -f "$TMPDIR/verify.sh" ] && abort_corrupted
+  source "$TMPDIR/verify.sh"
+}
+
+verify_module
 
 extracting_module() {
   ui_print "- Extracting module files"
