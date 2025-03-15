@@ -185,15 +185,24 @@ find /sys/ -type f -name "*throttling*" | while IFS= read -r throttling; do
     [ -w "$throttling" ] && echo 0 > "$throttling" 2>/dev/null
 done
 
-lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain libunity.so libil2cpp.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
+lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain UnityGfxDeviceW libunity.so libil2cpp.so libfb.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
 
-for path in /proc/sys/kernel/sched_lib_name /proc/sys/kernel/sched_lib_mask_force /proc/sys/walt/sched_lib_name /proc/sys/walt/sched_lib_mask_force; do
-    if [ -w "$path" ]; then
+paths=(
+    "/proc/sys/kernel/sched_lib_name"
+    "/proc/sys/kernel/sched_lib_mask_force"
+    "/proc/sys/walt/sched_lib_name"
+    "/proc/sys/walt/sched_lib_mask_force"
+)
+
+for path in "${paths[@]}"; do
+    if [ -f "$path" ]; then
+        chmod +w "$path" 2>/dev/null
         if [[ "$path" == */sched_lib_name ]]; then
-            echo "$lib_names" > "$path"
+            echo "$lib_names" > "$path" 2>/dev/null
         elif [[ "$path" == */sched_lib_mask_force ]]; then
-            echo "255" > "$path"
+            echo "255" > "$path" 2>/dev/null
         fi
+        chmod 444 "$path" 2>/dev/null
     fi
 done
 
