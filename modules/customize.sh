@@ -103,26 +103,30 @@ set_permissions() {
 
 set_permissions
 
-random=$((RANDOM % 9))
+random=$((RANDOM % 12))
 
 if [ $random -eq 0 ]; then
-    ui_print "- Snap Into Action !"
+    ui_print "- 8 Letters."
 elif [ $random -eq 1 ]; then
-    ui_print "- Leave Lag Behind !"
+    ui_print "- About You."
 elif [ $random -eq 2 ]; then
-    ui_print "- Snap the Lag Away !"
+    ui_print "- Apocalypse."
 elif [ $random -eq 3 ]; then
-    ui_print "- Optimize. Game. Win !"
+    ui_print "- Here With Me."
 elif [ $random -eq 4 ]; then
-    ui_print "- Stability Meets Power !"
+    ui_print "- I Love You So."
 elif [ $random -eq 5 ]; then
-    ui_print "- Rise with Snapdragon !"
+    ui_print "- a thousand years."
 elif [ $random -eq 6 ]; then
-    ui_print "- Perform Like a Phoenix !"
+    ui_print "- we can't be friends."
 elif [ $random -eq 7 ]; then
-    ui_print "- Dominate with Precision !"
+    ui_print "- Anything You Want."
 elif [ $random -eq 8 ]; then
-    ui_print "- Frame Stability? LOCKED !"
+    ui_print "- Somebody's Pleasure."
+elif [ $random -eq 9 ]; then
+    ui_print "- Versace on the Floor."
+elif [ $random -eq 10 ]; then
+    ui_print "- The Winner Takes It All."
 else
-    ui_print "- Unleash Snapdragon Efficiency !"
+    ui_print "- If Ever You're in My Arms Again."
 fi
