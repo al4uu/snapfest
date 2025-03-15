@@ -98,12 +98,12 @@ verify_module
 
 extracting_module() {
   ui_print "- Extracting module files"
-  unzip -o "$ZIPFILE" 'action.sh' -d "$MODPATH" > /dev/null 2>&1
-  unzip -o "$ZIPFILE" 'service.sh' -d "$MODPATH" > /dev/null 2>&1
-  unzip -o "$ZIPFILE" 'uninstall.sh' -d "$MODPATH" > /dev/null 2>&1
-  unzip -o "$ZIPFILE" 'post-fs-data.sh' -d "$MODPATH" > /dev/null 2>&1
-  unzip -o "$ZIPFILE" 'module.prop' -d "$MODPATH" > /dev/null 2>&1
-  unzip -o "$ZIPFILE" 'snapfest.png' -d "/data/local/tmp" > /dev/null 2>&1
+  extract "$ZIPFILE" 'module.prop' $MODPATH
+  extract "$ZIPFILE" 'action.sh' $MODPATH
+  extract "$ZIPFILE" 'service.sh' $MODPATH
+  extract "$ZIPFILE" 'uninstall.sh' $MODPATH
+  extract "$ZIPFILE" 'post-fs-data.sh' $MODPATH
+  extract "$ZIPFILE" 'snapfest.png' "/data/local/tmp"
 }
 
 extracting_module
@@ -111,7 +111,7 @@ extracting_module
 set_permissions() {
   ui_print "- Setting permissions"
   set_perm_recursive "$MODPATH" 0 0 0755 0644
-  for file in action.sh service.sh post-fs-data.sh uninstall.sh; do
+  for file in action.sh service.sh uninstall.sh post-fs-data.sh; do
     set_perm "$MODPATH/$file" 0 0 0755
   done
 }
