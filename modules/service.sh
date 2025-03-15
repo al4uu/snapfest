@@ -32,7 +32,7 @@ if [ -f "$MODULE_PROP" ] && [ ! -f "$BACKUP_PROP" ]; then
 fi
 
 if [ -f "$MODULE_PROP" ]; then
-    sed -i "s/^description=.*/description=[ 😋 SnapFest is running on ${BOARD_PLATFORM} | ✅ ${ROOT_METHOD} (${ROOT_VERSION}) ] Special performance module designed for Snapdragon devices!/" "$MODULE_PROP"
+    sed -i "s/^description=.*/description=[ 😋 SnapFest is running on ${BOARD_PLATFORM} | ✅ ${ROOT_METHOD} (${ROOT_VERSION}) ] Special performance module designed for Snapdragon devices !/" "$MODULE_PROP"
 fi
 
 while [ -z "$(resetprop sys.boot_completed)" ]; do
@@ -141,39 +141,6 @@ for mmc_host in /sys/class/devfreq/mmc*/clk_scaling; do
     echo "15" > "$mmc_host/down_threshold"
     echo "50" > "$mmc_host/polling_interval"
 done
-
-if [ -f "/proc/sys/net/ipv4/tcp_available_congestion_control" ]; then
-    congestion=$(cat /proc/sys/net/ipv4/tcp_available_congestion_control)
-
-    for algo in bbr2 bbr cubic bic westwood newreno; do
-        if echo "$congestion" | grep -qw "$algo"; then
-            chmod 644 /proc/sys/net/ipv4/tcp_congestion_control
-            echo "$algo" > /proc/sys/net/ipv4/tcp_congestion_control
-            chmod 444 /proc/sys/net/ipv4/tcp_congestion_control
-            break
-        fi
-    done
-
-    for param in tcp_low_latency tcp_ecn tcp_fastopen tcp_sack tcp_timestamps; do
-        case $param in
-            tcp_fastopen) value=3 ;;
-            tcp_ecn | tcp_sack | tcp_low_latency) value=1 ;;
-            tcp_timestamps) value=0 ;;
-        esac
-        target="/proc/sys/net/ipv4/$param"
-        if [ -f "$target" ]; then
-            chmod 644 "$target"
-            echo "$value" > "$target"
-            chmod 444 "$target"
-        fi
-    done
-
-    if [ -f /sys/module/rmnet_data/parameters/rmnet_data_log_level ]; then
-        chmod 644 /sys/module/rmnet_data/parameters/rmnet_data_log_level
-        echo "0" > /sys/module/rmnet_data/parameters/rmnet_data_log_level
-        chmod 444 /sys/module/rmnet_data/parameters/rmnet_data_log_level
-    fi
-fi
 
 for gpu in /sys/class/kgsl/kgsl-3d0; do
     if [ -e "$gpu/adrenoboost" ]; then
