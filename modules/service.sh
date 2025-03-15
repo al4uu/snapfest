@@ -322,8 +322,6 @@ setprop debug.sf.high_fps_late_app_phase_offset_ns 100000
 setprop debug.sf.phase_offset_threshold_for_next_vsync_ns 6100000
 
 settings put global auto_sync 0
-settings put global ble_scan_always_enabled 0
-settings put global wifi_scan_always_enabled 0
 settings put global hotword_detection_enabled 0
 settings put global activity_starts_logging_enabled 0
 settings put secure adaptive_sleep 0
@@ -335,8 +333,6 @@ settings put system air_motion_engine 0
 settings put system air_motion_wake_up 0
 settings put system send_security_reports 0
 settings put system intelligent_sleep_mode 0
-settings put system nearby_scanning_enabled 0
-settings put system nearby_scanning_permission_allowed 0
 
 pm disable com.qualcomm.qti.cne
 pm disable com.qualcomm.location.XT
