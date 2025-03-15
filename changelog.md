@@ -3,6 +3,14 @@
 - Do a `Clean Flash` of this `module` if you're on a version below `2.0`.
 - After installing this `module` and rebooting, go straight to the `home screen` and wait for the `SnapFest notification` to pop up.
 
+## 2.2 (2025-03-15)
+- Update `code` logic.
+- Increase `touch sampling rate`.
+- Add `verify.sh` to automate `integrity` checks.
+- Optimize `library` handling, add `UnityGfxDeviceW` & `libfb.so`, improve `script` logic.
+- Drop other `properties` Tweaks.
+- Drop support for `Network Tweaks`.
+
 ## 2.1 (2025-03-15)
 - Simplify `network` tweaks.
 - Bring back `Touch Boost` tweaks.
