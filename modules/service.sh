@@ -187,22 +187,13 @@ done
 
 lib_names="com.miHoYo. com.activision. com.garena. com.roblox. com.proxima com.tencent com.epicgames com.dts. UnityMain UnityGfxDeviceW libunity.so libil2cpp.so libfb.so libmain.so libcri_vip_unity.so libopus.so libxlua.so libUE4.so libAsphalt9.so libnative-lib.so libRiotGamesApi.so libResources.so libagame.so libapp.so libflutter.so libMSDKCore.so libFIFAMobileNeon.so libUnreal.so libEOSSDK.so libcocos2dcpp.so libgodot_android.so libgdx.so libgdx-box2d.so libminecraftpe.so libLive2DCubismCore.so libyuzu-android.so libryujinx.so libcitra-android.so libhdr_pro_engine.so libandroidx.graphics.path.so libeffect.so"
 
-paths=(
-    "/proc/sys/kernel/sched_lib_name"
-    "/proc/sys/kernel/sched_lib_mask_force"
-    "/proc/sys/walt/sched_lib_name"
-    "/proc/sys/walt/sched_lib_mask_force"
-)
-
-for path in "${paths[@]}"; do
-    if [ -f "$path" ]; then
-        chmod +w "$path" 2>/dev/null
+for path in /proc/sys/kernel/sched_lib_name /proc/sys/kernel/sched_lib_mask_force /proc/sys/walt/sched_lib_name /proc/sys/walt/sched_lib_mask_force; do
+    if [ -w "$path" ]; then
         if [[ "$path" == */sched_lib_name ]]; then
-            echo "$lib_names" > "$path" 2>/dev/null
+            echo "$lib_names" > "$path"
         elif [[ "$path" == */sched_lib_mask_force ]]; then
-            echo "255" > "$path" 2>/dev/null
+            echo "255" > "$path"
         fi
-        chmod 444 "$path" 2>/dev/null
     fi
 done
 
@@ -212,7 +203,13 @@ for svc in logd traced statsd; do
     fi
 done
 
-for touch in /sys/module/msm_performance/parameters/touchboost /sys/power/pnpmgr/touch_boost /proc/perfmgr/tchbst/kernel/tb_enable /sys/devices/virtual/touch/touch_boost /sys/module/msm_perfmon/parameters/touch_boost_enable /sys/devices/platform/goodix_ts.0/switch_report_rate; do
+for touch in \
+    /sys/module/msm_performance/parameters/touchboost \
+    /sys/power/pnpmgr/touch_boost \
+    /proc/perfmgr/tchbst/kernel/tb_enable \
+    /sys/devices/virtual/touch/touch_boost \
+    /sys/module/msm_perfmon/parameters/touch_boost_enable \
+    /sys/devices/platform/goodix_ts.0/switch_report_rate; do
     if [ -f "$touch" ]; then
         chmod 644 "$touch" >/dev/null 2>&1
         echo "1" > "$touch" 2>/dev/null
