@@ -203,7 +203,7 @@ for svc in logd traced statsd; do
     fi
 done
 
-for touch in /sys/module/msm_performance/parameters/touchboost /sys/power/pnpmgr/touch_boost /proc/perfmgr/tchbst/kernel/tb_enable /sys/devices/virtual/touch/touch_boost /sys/module/msm_perfmon/parameters/touch_boost_enable; do
+for touch in /sys/module/msm_performance/parameters/touchboost /sys/power/pnpmgr/touch_boost /proc/perfmgr/tchbst/kernel/tb_enable /sys/devices/virtual/touch/touch_boost /sys/module/msm_perfmon/parameters/touch_boost_enable /sys/devices/platform/goodix_ts.0/switch_report_rate; do
     if [ -f "$touch" ]; then
         chmod 644 "$touch" >/dev/null 2>&1
         echo "1" > "$touch" 2>/dev/null
