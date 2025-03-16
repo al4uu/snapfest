@@ -1,6 +1,6 @@
 # shellcheck disable=SC2034
 SKIPUNZIP=1
-SOC=2
+SOC=0
 
 print_info() {
   ui_print "- Device : $(getprop ro.product.manufacturer) ($(getprop ro.product.device))"
