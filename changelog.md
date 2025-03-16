@@ -3,6 +3,16 @@
 - Do a `Clean Flash` of this `module` if you're on a version below `2.0`.
 - After installing this `module` and rebooting, go straight to the `home screen` and wait for the `SnapFest notification` to pop up.
 
+## 2.3 (2025-03-16)
+- Simplified `throttling` control by merging loops into a single process.
+- Simplified `CPU` Governor and `frequency` handling by merging redundant loops.
+- Dropped unnecessary `cmd` and made the structure cleaner.
+- Improved `I/O` Scheduler selection with a clearer fallback `mechanism`.
+- Standardized `chmod` operations for consistency across all `system` files.
+- Consolidated `MMC` adjustments, streamlining `clk_scaling` and `frequency` settings.
+- Reduced repetitive reads for available frequencies and applied direct max/min adjustments in devfreq management.
+- Cleaned up `GPU` tuning by merging `loops`, bringing back `msm-adreno-tz` governor, and structuring `adrenoboost`, throttling, and other parameters.
+
 ## 2.2 (2025-03-15)
 - Update `code` logic.
 - Increase `touch sampling rate`.
