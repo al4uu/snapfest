@@ -1,5 +1,6 @@
 # shellcheck disable=SC2034
 SKIPUNZIP=1
+SOC=2
 
 print_info() {
   ui_print "- Device : $(getprop ro.product.manufacturer) ($(getprop ro.product.device))"
@@ -84,8 +85,10 @@ remove_bumbu_racik
 
 verify_module() {
   abort_corrupted() {
+    ui_print "*********************************************************"
     ui_print "! Unable to extract verify.sh!"
-    abort "! This zip may be corrupted, please try downloading again"
+    ui_print "! This zip may be corrupted, please try downloading again"
+    abort "*********************************************************"
   }
 
   ui_print "- Extracting verify.sh"
