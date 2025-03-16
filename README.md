@@ -22,7 +22,7 @@
 3. Reboot your `device` for the changes to take effect.
 
 ## 🤔 Changelogs
-- Read full `changelog` [**here**](https://github.com/al4uu/snapfest/blob/fest/changelog.md)
+- Read full `Changelog` [**here**](https://github.com/al4uu/snapfest/blob/fest/changelog.md)
 
 ## 🫱🏻‍🫲🏼 Contribution
 <img align="left" width="100" src="./assets/morax_2.webp" style="margin-right: 15px;">
@@ -33,6 +33,8 @@ If you're interested in contributing to or improving SnapFest, feel free to fork
 ## 📋 License
 This project is `licensed` under the `Apache License 2.0`. 
 ```text
+Copyright (C) 2025-2026 @al4uu
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
