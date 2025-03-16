@@ -1,7 +1,7 @@
 id=snapfest
 name=SnapFest Tweaks
-version=2.2 (202-e431469-release)
-versionCode=202
+version=2.3 (203-2b790cd-release)
+versionCode=203
 author=@al4uu
 description=Special performance module designed for Snapdragon devices !
 updateJson=https://raw.githubusercontent.com/al4uu/snapfest/fest/update.json
