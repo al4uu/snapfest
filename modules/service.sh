@@ -39,47 +39,71 @@ while [ -z "$(resetprop sys.boot_completed)" ]; do
     sleep 5
 done
 
-find /sys/devices/system/cpu -maxdepth 1 -name 'cpu?' | while IFS= read -r cpu; do
-  echo performance > "$cpu/cpufreq/scaling_governor"
+for cpu in /sys/devices/system/cpu/*/cpufreq; do
+    [ -f "$cpu/scaling_governor" ] && echo performance > "$cpu/scaling_governor" 2>/dev/null
+
+    if [ -f "$cpu/cpuinfo_max_freq" ]; then
+        cpu_maxfreq=$(cat "$cpu/cpuinfo_max_freq")
+        if [ -n "$cpu_maxfreq" ]; then
+            for freq in scaling_max_freq scaling_min_freq; do
+                target="$cpu/$freq"
+                if [ -f "$target" ]; then
+                    chmod 644 "$target" >/dev/null 2>&1
+                    echo "$cpu_maxfreq" > "$target" 2>/dev/null
+                    chmod 444 "$target" >/dev/null 2>&1
+                fi
+            done
+        fi
+    fi
 done
 
-for path in /sys/class/devfreq/*.ufshc /sys/class/devfreq/mmc*; do
-    if [ -w "$path/governor" ]; then
-        echo "performance" > "$path/governor"
+for gpu in /sys/class/kgsl/kgsl-3d0; do
+    [ ! -d "$gpu" ] && continue
+
+    gpu_path="$gpu/devfreq"
+    if [ -d "$gpu_path" ]; then
+        if [ -e "$gpu_path/governor" ]; then
+            chmod 644 "$gpu_path/governor" >/dev/null 2>&1
+            echo "msm-adreno-tz" > "$gpu_path/governor"
+            chmod 444 "$gpu_path/governor" >/dev/null 2>&1
+        fi
+
+        if [ -f "$gpu_path/available_frequencies" ]; then
+            freq=$(cat "$gpu_path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
+            if [ -n "$freq" ]; then
+                for freq_file in min_freq max_freq; do
+                    target="$gpu_path/$freq_file"
+                    if [ -f "$target" ]; then
+                        chmod 644 "$target" >/dev/null 2>&1
+                        echo "$freq" > "$target"
+                        chmod 444 "$target" >/dev/null 2>&1
+                    fi
+                done
+            fi
+        fi
     fi
 
-    if [ -f "$path/available_frequencies" ]; then
-        freq=$(cat "$path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
-        [ -n "$freq" ] && chmod 644 "$path/max_freq" && echo "$freq" > "$path/max_freq" && chmod 444 "$path/max_freq"
-        [ -n "$freq" ] && chmod 644 "$path/min_freq" && echo "$freq" > "$path/min_freq" && chmod 444 "$path/min_freq"
-    fi
-done &
-
-for path in /sys/devices/system/cpu/*/cpufreq; do
-    cpu_maxfreq=$(cat "$path/cpuinfo_max_freq")
-    
-    for freq in scaling_max_freq scaling_min_freq; do
-        target="$path/$freq"
-        if [ -f "$target" ]; then
+    for agus in adrenoboost throttling bus_split force_clk_on force_bus_on force_rail_on force_no_nap idle_timer max_pwrlevel snapshot/dump snapshot/snapshot_crashdumper; do
+        target="$gpu/$agus"
+        if [ -e "$target" ]; then
             chmod 644 "$target" >/dev/null 2>&1
-            echo "$cpu_maxfreq" > "$target" 2>/dev/null
+            case "$agus" in
+                adrenoboost) echo "3" > "$target" ;;
+                throttling | bus_split | max_pwrlevel | snapshot/dump | snapshot/snapshot_crashdumper) echo "0" > "$target" ;;
+                force_clk_on | force_bus_on | force_rail_on | force_no_nap) echo "1" > "$target" ;;
+                idle_timer) echo "100000000" > "$target" ;;
+            esac
             chmod 444 "$target" >/dev/null 2>&1
         fi
     done
-done &
-
-for path in /sys/class/devfreq/*cpu-ddr-latfloor* /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu-cpu-ddr-bw /sys/class/devfreq/*cpu-cpu-llcc-bw /sys/class/devfreq/*gpubw*; do
-    if [ -e "$path/governor" ]; then
-        echo "performance" > "$path/governor"
-    fi
-done &
+done
 
 for path in /sys/class/devfreq/*cpu*-lat /sys/class/devfreq/*cpu*-bw /sys/class/devfreq/*llccbw* /sys/class/devfreq/*bus_llcc* /sys/class/devfreq/*bus_ddr* /sys/class/devfreq/*l3-* /sys/class/devfreq/*memlat* /sys/class/devfreq/*cpubw* /sys/class/devfreq/*gpubw* /sys/class/devfreq/*kgsl-ddr-qos*; do
     [ ! -d "$path" ] && continue
     freq=$(cat "$path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
     [ -n "$freq" ] && chmod 644 "$path/max_freq" && echo "$freq" > "$path/max_freq" && chmod 444 "$path/max_freq"
     [ -n "$freq" ] && chmod 644 "$path/min_freq" && echo "$freq" > "$path/min_freq" && chmod 444 "$path/min_freq"
-done &
+done
 
 for component in LLCC L3 DDR DDRQOS; do
     base_path="/sys/devices/system/cpu/bus_dcvs/$component"
@@ -92,93 +116,66 @@ for component in LLCC L3 DDR DDRQOS; do
 
     for path in "$base_path"/*/max_freq "$base_path"/*/min_freq; do
         [ -e "$path" ] && chmod 644 "$path" && echo "$freq" > "$path" && chmod 444 "$path"
-    done &
+    done
 done
 
-gpu_path="/sys/class/kgsl/kgsl-3d0/devfreq"
-if [ -d "$gpu_path" ] && [ -f "$gpu_path/available_frequencies" ]; then
-    freq=$(cat "$gpu_path/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
-    [ -n "$freq" ] && chmod 644 "$gpu_path/min_freq" && echo "$freq" > "$gpu_path/min_freq" && chmod 444 "$gpu_path/min_freq"
-    [ -n "$freq" ] && chmod 644 "$gpu_path/max_freq" && echo "$freq" > "$gpu_path/max_freq" && chmod 444 "$gpu_path/max_freq"
-fi
-
-target_freq=$(cat /sys/class/devfreq/mmc*/available_frequencies | tr ' ' '\n' | sort -nr | head -n 1)
+for storek in /sys/class/devfreq/*.ufshc /sys/class/devfreq/mmc*; do
+    if [ -f "$storek/available_frequencies" ]; then
+        freq=$(cat "$storek/available_frequencies" | tr ' ' '\n' | sort -nr | head -n 1)
+        [ -n "$freq" ] && chmod 644 "$storek/max_freq" && echo "$freq" > "$storek/max_freq" && chmod 444 "$storek/max_freq"
+        [ -n "$freq" ] && chmod 644 "$storek/min_freq" && echo "$freq" > "$storek/min_freq" && chmod 444 "$storek/min_freq"
+    fi
+done
 
 for block in /sys/block/*; do
     queue="$block/queue"
-    if [ -d "$queue" ]; then
-        if [ -f "$queue/scheduler" ]; then
-            sched=$(cat "$queue/scheduler")
-            found=0
-            for algo in cfq noop kyber bfq mq-deadline none; do
-                if echo "$sched" | grep -q "$algo"; then
-                    echo "$algo" > "$queue/scheduler"
-                    found=1
-                    break
-                fi
-            done
-            [ "$found" -eq 0 ] && echo "mq-deadline" > "$queue/scheduler"
-        fi
+    [ -d "$queue" ] || continue
 
-        echo "0" > "$queue/add_random"
-        echo "0" > "$queue/iostats"
-        echo "32" > "$queue/read_ahead_kb"
-        echo "64" > "$queue/nr_requests"
+    if [ -f "$queue/scheduler" ]; then
+        sched=$(cat "$queue/scheduler")
+        for algo in cfq noop kyber bfq mq-deadline none; do
+            if echo "$sched" | grep -woq "$algo"; then
+                chmod 644 "$queue/scheduler"
+                echo "$algo" > "$queue/scheduler"
+                chmod 444 "$queue/scheduler"
+                break
+            fi
+        done || { chmod 644 "$queue/scheduler"; echo "mq-deadline" > "$queue/scheduler"; chmod 444 "$queue/scheduler"; }
     fi
+
+    for anu in add_random iostats read_ahead_kb nr_requests; do
+        target="$queue/$anu"
+        [ -f "$target" ] || continue
+        chmod 644 "$target"
+        case "$anu" in
+            add_random | iostats) echo "0" > "$target" ;;
+            read_ahead_kb) echo "32" > "$target" ;;
+            nr_requests) echo "64" > "$target" ;;
+        esac
+        chmod 444 "$target"
+    done
 done
 
-for mmc_tweak in /sys/class/devfreq/mmc*; do
-    [ -e "$mmc_tweak" ] || continue
-    echo "$target_freq" > "$mmc_tweak/min_freq"
-    echo "100" > "$mmc_tweak/up_threshold"
-    echo "20" > "$mmc_tweak/down_threshold"
-    echo "10" > "$mmc_tweak/polling_interval"
-done
+for mmc in /sys/class/devfreq/mmc*; do
+    [ -d "$mmc" ] || continue
 
-for mmc_host in /sys/class/devfreq/mmc*/clk_scaling; do
-    [ -e "$mmc_host" ] || continue
-    echo "90" > "$mmc_host/up_threshold"
-    echo "15" > "$mmc_host/down_threshold"
-    echo "50" > "$mmc_host/polling_interval"
-done
-
-for gpu in /sys/class/kgsl/kgsl-3d0; do
-    if [ -e "$gpu/adrenoboost" ]; then
-        echo "3" > "$gpu/adrenoboost"
-    fi
-    if [ -e "$gpu/devfreq/adrenoboost" ]; then
-        echo "0" > "$gpu/devfreq/adrenoboost"
-    fi
-    if [ -e "$gpu/throttling" ]; then
-        echo "0" > "$gpu/throttling"
-    fi
-    if [ -e "$gpu/bus_split" ]; then
-        echo "0" > "$gpu/bus_split"
-    fi
-    if [ -e "$gpu/force_clk_on" ]; then
-        echo "1" > "$gpu/force_clk_on"
-    fi
-    if [ -e "$gpu/force_bus_on" ]; then
-        echo "1" > "$gpu/force_bus_on"
-    fi
-    if [ -e "$gpu/force_rail_on" ]; then
-        echo "1" > "$gpu/force_rail_on"
-    fi
-    if [ -e "$gpu/force_no_nap" ]; then
-        echo "1" > "$gpu/force_no_nap"
-    fi
-    if [ -e "$gpu/idle_timer" ]; then
-        echo "100000000" > "$gpu/idle_timer"
-    fi
-    if [ -e "$gpu/max_pwrlevel" ]; then
-        echo "0" > "$gpu/max_pwrlevel"
-    fi
-    if [ -e "$gpu/snapshot/dump" ]; then
-        echo "0" > "$gpu/snapshot/dump"
-    fi
-    if [ -e "$gpu/snapshot/snapshot_crashdumper" ]; then
-        echo "0" > "$gpu/snapshot/snapshot_crashdumper"
-    fi
+    for tweak in clk_scaling available_frequencies up_threshold down_threshold polling_interval min_freq; do
+        target="$mmc/$tweak"
+        [ -f "$target" ] || continue
+        chmod 644 "$target"
+        case "$tweak" in
+            clk_scaling) 
+                echo "90" > "$mmc/up_threshold"
+                echo "15" > "$mmc/down_threshold"
+                echo "50" > "$mmc/polling_interval"
+                ;;
+            available_frequencies) 
+                target_freq=$(cat "$target" | tr ' ' '\n' | sort -nr | head -n 1)
+                [ -n "$target_freq" ] && echo "$target_freq" > "$mmc/min_freq"
+                ;;
+        esac
+        chmod 444 "$target"
+    done
 done
 
 find /sys/ -type f -name "*throttling*" | while IFS= read -r throttling; do
@@ -197,12 +194,6 @@ for path in /proc/sys/kernel/sched_lib_name /proc/sys/kernel/sched_lib_mask_forc
     fi
 done
 
-for svc in logd traced statsd; do
-    if getprop init.svc.$svc | grep -q "running"; then
-        su -c "stop $svc"
-    fi
-done
-
 for touch in \
     /sys/module/msm_performance/parameters/touchboost \
     /sys/power/pnpmgr/touch_boost \
@@ -214,6 +205,12 @@ for touch in \
         chmod 644 "$touch" >/dev/null 2>&1
         echo "1" > "$touch" 2>/dev/null
         chmod 444 "$touch" >/dev/null 2>&1
+    fi
+done
+
+for svc in logd traced statsd; do
+    if getprop init.svc.$svc | grep -q "running"; then
+        su -c "stop $svc"
     fi
 done
 
